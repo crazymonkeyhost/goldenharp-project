@@ -16,7 +16,7 @@ export class WinLineValueCounter extends Container {
       text: 'win-counter',
       style: {
         fontFamily: 'win-counter-bm',
-        fontSize: 90,
+        fontSize: 100,
       },
     });
     this.valueText.anchor.set(0.5);

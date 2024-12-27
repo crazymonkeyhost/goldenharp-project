@@ -460,7 +460,7 @@ export class MainScene extends Scene<'main', GoldenHarpGame> {
 		await this.playCascades(response.cascades);
 
 		if (response.spin.spin_win > 0) {
-			await this.winLineValueCounter.countWin(response.spin.spin_win).then(() => wait(500).done);
+			await this.winLineValueCounter.countWin(response.spin.spin_win);
 		}
 
 		// await linesCompleted;
