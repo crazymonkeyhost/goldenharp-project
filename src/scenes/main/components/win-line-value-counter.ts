@@ -1,4 +1,4 @@
-import { Container,  BitmapText } from 'pixi.js';
+import {Container, BitmapText, Sprite} from 'pixi.js';
 import { currencyFormatter } from '@/core/services/currency-formatter';
 import { toActionArea } from '@/core/services/resize/resize.service';
 import { gameConfig } from '@/config/game-config';
@@ -12,11 +12,16 @@ export class WinLineValueCounter extends Container {
   constructor() {
     super();
 
+    const bg = Sprite.from('win-counter-bg');
+    bg.anchor.set(0.5);
+    bg.position.set(0, 15);
+    this.addChild(bg);
+
     this.valueText = new BitmapText({
       text: 'win-counter',
       style: {
         fontFamily: 'win-counter-bm',
-        fontSize: 100,
+        fontSize: 90,
       },
     });
     this.valueText.anchor.set(0.5);
