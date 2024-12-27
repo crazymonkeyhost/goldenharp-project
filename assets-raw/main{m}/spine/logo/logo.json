@@ -1,0 +1,55 @@
+{
+"skeleton": {
+	"hash": "h9H/CUcKQTI",
+	"spine": "4.1-from-4.2.38",
+	"x": -273.5,
+	"y": -56,
+	"width": 547,
+	"height": 112,
+	"images": "D:/Файли для роботи/golden_harp/bonus/logo/",
+	"audio": "./audio"
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "logo", "parent": "root", "icon": "handLeft" }
+],
+"slots": [
+	{ "name": "logo_00000", "bone": "root", "attachment": "logo_" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"logo_00000": {
+				"logo_": {
+					"type": "mesh",
+					"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
+					"triangles": [ 1, 2, 3, 1, 3, 0 ],
+					"vertices": [ 1, 1, 273.5, -56, 1, 1, 1, -273.5, -56, 1, 1, 1, -273.5, 56, 1, 1, 1, 273.5, 56, 1 ],
+					"hull": 4,
+					"sequence": { "count": 37, "start": 0, "digits": 5 },
+					"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
+					"width": 547,
+					"height": 112
+				}
+			}
+		}
+	}
+],
+"animations": {
+	"logo": {
+		"attachments": {
+			"default": {
+				"logo_00000": {
+					"logo_": {
+						"sequence": [
+							{ "mode": "once", "delay": 0.05 },
+							{ "time": 1.8667, "mode": "once", "index": 36 }
+						]
+					}
+				}
+			}
+		}
+	}
+}
+}

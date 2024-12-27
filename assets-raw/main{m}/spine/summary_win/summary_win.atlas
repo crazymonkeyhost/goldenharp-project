@@ -1,0 +1,108 @@
+summary_win.png
+size:2018,1707
+filter:Linear,Linear
+pma:true
+frame1 1 (2)
+bounds:514,1072,724,321
+Шар 10
+bounds:1515,1581,124,131
+rotate:90
+Шар 13
+bounds:1240,797,516,375
+rotate:90
+Шар 15
+bounds:1643,1058,511,361
+rotate:90
+Шар 18
+bounds:2,711,533,359
+Шар 19
+bounds:1358,1315,283,264
+Шар 21
+bounds:537,600,502,470
+Шар 24
+bounds:2,1138,510,320
+Шар 25
+bounds:2,2,772,596
+Шар 27
+bounds:636,1395,720,199
+Шар 28
+bounds:1041,302,975,493
+Шар 3 копія
+bounds:301,1633,72,86
+rotate:90
+Шар 30
+bounds:300,1472,153,167
+rotate:90
+Шар 34
+bounds:1358,1592,155,113
+Шар 35
+bounds:201,1634,98,71
+Шар 36
+bounds:1227,1596,109,129
+rotate:90
+Шар 39
+bounds:1043,1619,182,86
+Шар 4
+bounds:389,1629,76,76
+Шар 40
+bounds:761,1623,188,82
+Шар 41
+bounds:548,1626,211,79
+Шар 45
+bounds:2,1506,152,136
+Шар 47
+bounds:1648,1575,162,130
+Шар 48
+bounds:123,1644,61,76
+rotate:90
+Шар 49
+bounds:2,1653,52,53
+rotate:90
+Шар 5
+bounds:57,1651,64,54
+Шар 53
+bounds:951,1622,90,83
+Шар 54
+bounds:469,1460,165,164
+Шар 55
+bounds:156,1493,139,142
+rotate:90
+Шар 56
+bounds:467,1627,79,78
+Шар 9
+bounds:1812,1571,140,134
+
+summary_win_2.png
+size:1666,1854
+filter:Linear,Linear
+pma:true
+Group 33964
+bounds:2,2,1434,766
+Шар 33
+bounds:2,770,1662,1082
+
+summary_win_3.png
+size:2007,1581
+filter:Linear,Linear
+pma:true
+Group 33961 (1)
+bounds:2,757,1241,822
+win score 1 копія
+bounds:2,2,1162,753
+ррр
+bounds:1245,345,1234,760
+rotate:90
+
+summary_win_4.png
+size:1976,1762
+filter:Linear,Linear
+pma:true
+Шар 14
+bounds:2,166,989,850
+Шар 16
+bounds:1137,854,906,837
+rotate:90
+Шар 22
+bounds:993,2,944,850
+створити заливку полотна
+bounds:2,1018,1133,742

@@ -1,0 +1,32 @@
+additional_machine.png
+size:1716,513
+filter:Linear,Linear
+pma:true
+Flare
+bounds:972,130,128,128
+Spark
+bounds:2,2,256,256
+fire 1
+bounds:671,116,147,142
+Шар 13
+bounds:820,135,150,123
+Шар 14
+bounds:671,83,27,31
+Шар 15
+bounds:260,18,61,49
+Шар 16
+bounds:260,18,61,49
+Шар 17
+bounds:820,120,13,18
+rotate:90
+Шар 18
+bounds:1102,242,15,16
+Шар 26
+bounds:2,260,1169,251
+Шар 31
+bounds:260,69,201,189
+Шар 32
+bounds:1173,4,507,541
+rotate:90
+Шар 5
+bounds:463,78,206,180

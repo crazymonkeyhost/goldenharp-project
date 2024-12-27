@@ -1,0 +1,397 @@
+super_game.png
+size:2046,2011
+filter:Linear,Linear
+pma:true
+cron (1) копія
+bounds:1026,1342,286,299
+rotate:90
+eyes
+bounds:163,1993,70,16
+super_game/poseidon/poseidon_00006
+bounds:415,1074,786,266
+super_game/poseidon/poseidon_00007
+bounds:1203,1015,786,266
+super_game/poseidon/poseidon_00008
+bounds:2,806,786,266
+super_game/poseidon/poseidon_00009
+bounds:790,747,786,266
+super_game/poseidon/poseidon_00010
+bounds:2,538,786,266
+super_game/poseidon/poseidon_00011
+bounds:790,479,786,266
+super_game/poseidon/poseidon_00012
+bounds:2,270,786,266
+super_game/poseidon/poseidon_00013
+bounds:790,211,786,266
+super_game/poseidon/poseidon_00014
+bounds:2,2,786,266
+super_game/Нова папка/Шар 34
+bounds:447,1863,155,113
+super_game/Нова папка/Шар 37
+bounds:1765,1953,56,86
+rotate:90
+super_game/Нова папка/Шар 47
+bounds:741,1836,162,130
+super_game/Нова папка/Шар 48
+bounds:2,1935,61,76
+rotate:90
+super_game/Нова папка/Шар 49
+bounds:1585,1957,52,53
+rotate:90
+super_game/Нова папка/Шар 50
+bounds:1243,1963,47,46
+super_game/Нова папка/Шар 51
+bounds:1292,1962,47,56
+rotate:90
+super_game/Нова папка/Шар 55
+bounds:1307,1820,139,142
+rotate:90
+super_game/Шар 1 копія
+bounds:1578,199,423,434
+rotate:90
+super_game/Шар 10
+bounds:2,1742,176,218
+rotate:90
+super_game/Шар 11
+bounds:231,1917,71,90
+rotate:90
+super_game/Шар 12
+bounds:1809,1777,177,170
+super_game/Шар 13
+bounds:810,1968,80,41
+super_game/Шар 14
+bounds:604,1849,135,119
+super_game/Шар 2
+bounds:437,1420,233,327
+rotate:90
+super_game/Шар 2тоо
+bounds:2,1176,411,333
+super_game/Шар 3
+bounds:1367,1613,206,197
+super_game/Шар 4
+bounds:439,1670,177,199
+rotate:90
+super_game/Шар 455
+bounds:1578,624,418,389
+super_game/Шар 5
+bounds:2,1511,189,433
+rotate:90
+super_game/Шар 6
+bounds:46,1998,64,11
+super_game/Шар 7 копія 2
+bounds:1327,1283,410,306
+super_game/Шар 8
+bounds:640,1655,179,241
+rotate:90
+super_game/Шар 9
+bounds:222,1702,176,215
+rotate:90
+Шар 191
+bounds:905,1826,251,137
+Шар 192 копія
+bounds:1792,1533,252,242
+Шар 193
+bounds:1916,1949,60,69
+rotate:90
+Шар 194
+bounds:1350,1962,47,74
+rotate:90
+Шар 195
+bounds:151,1920,71,78
+rotate:90
+Шар 196
+bounds:664,1970,39,83
+rotate:90
+Шар 197
+bounds:1182,1964,45,59
+rotate:90
+Шар 198
+bounds:465,1979,95,30
+Шар 199
+bounds:1645,1790,161,162
+rotate:90
+Шар 200
+bounds:362,1986,30,23
+Шар 201
+bounds:394,1985,34,24
+Шар 203
+bounds:235,1991,72,18
+Шар 204
+bounds:1640,1954,123,55
+Шар 205
+bounds:323,1880,122,101
+Шар 207
+bounds:1853,1951,58,61
+rotate:90
+Шар 208
+bounds:1169,1630,196,188
+Шар 209
+bounds:1575,1591,215,197
+Шар 211
+bounds:883,1638,284,182
+Шар 212
+bounds:766,1398,258,238
+Шар 213 копія
+bounds:80,1926,67,69
+rotate:90
+Шар 214
+bounds:126,1996,15,13
+Шар 222
+bounds:892,1968,41,70
+rotate:90
+Шар 223
+bounds:624,1977,32,38
+rotate:90
+Шар 224
+bounds:430,1983,26,33
+rotate:90
+Шар 225
+bounds:333,1987,27,22
+Шар 226
+bounds:309,1990,22,19
+Шар 227
+bounds:143,1995,18,14
+Шар 228
+bounds:112,1998,12,11
+Шар 229
+bounds:1451,1812,192,140
+Шар 231
+bounds:749,1969,40,59
+rotate:90
+Шар 232
+bounds:2,1999,20,10
+Шар 233
+bounds:24,1999,20,10
+Шар 234
+bounds:1158,1822,138,147
+rotate:90
+Шар 26
+bounds:1113,1965,44,67
+rotate:90
+Шар 27
+bounds:1426,1961,48,71
+rotate:90
+Шар 28
+bounds:562,1978,31,60
+rotate:90
+Шар 29
+bounds:964,1966,43,54
+rotate:90
+Шар 30
+bounds:1020,1966,43,46
+rotate:90
+Шар 31
+bounds:1068,1966,43,43
+Шар 32
+bounds:1499,1960,84,49
+
+super_game_2.png
+size:1914,2014
+filter:Linear,Linear
+pma:true
+super_game/cronus/cronus_00006
+bounds:2,353,895,319
+super_game/cronus/cronus_00007
+bounds:899,323,895,319
+super_game/cronus/cronus_00008
+bounds:2,32,895,319
+super_game/cronus/cronus_00009
+bounds:899,2,895,319
+super_game/poseidon/poseidon_00015
+bounds:2,1746,786,266
+super_game/poseidon/poseidon_00016
+bounds:790,1746,786,266
+super_game/poseidon/poseidon_00017
+bounds:2,1478,786,266
+super_game/poseidon/poseidon_00018
+bounds:790,1478,786,266
+super_game/poseidon/poseidon_00019
+bounds:2,1210,786,266
+super_game/poseidon/poseidon_00020
+bounds:790,1210,786,266
+super_game/poseidon/poseidon_00021
+bounds:2,942,786,266
+super_game/poseidon/poseidon_00022
+bounds:790,942,786,266
+super_game/poseidon/poseidon_00023
+bounds:2,674,786,266
+super_game/poseidon/poseidon_00024
+bounds:790,674,786,266
+super_game/zeus/zeus_00004
+bounds:1578,1329,683,334
+rotate:90
+super_game/zeus/zeus_00005
+bounds:1578,644,683,334
+rotate:90
+
+super_game_3.png
+size:1796,1928
+filter:Linear,Linear
+pma:true
+super_game/cronus/cronus_00010
+bounds:2,1607,895,319
+super_game/cronus/cronus_00011
+bounds:899,1607,895,319
+super_game/cronus/cronus_00012
+bounds:2,1286,895,319
+super_game/cronus/cronus_00013
+bounds:899,1286,895,319
+super_game/cronus/cronus_00014
+bounds:2,965,895,319
+super_game/cronus/cronus_00015
+bounds:899,965,895,319
+super_game/cronus/cronus_00016
+bounds:2,644,895,319
+super_game/cronus/cronus_00017
+bounds:899,644,895,319
+super_game/cronus/cronus_00018
+bounds:2,323,895,319
+super_game/cronus/cronus_00019
+bounds:899,323,895,319
+super_game/cronus/cronus_00020
+bounds:2,2,895,319
+super_game/cronus/cronus_00021
+bounds:899,2,895,319
+
+super_game_4.png
+size:1892,2045
+filter:Linear,Linear
+pma:true
+super_game/cronus/cronus_00022
+bounds:2,2,895,319
+super_game/cronus/cronus_00023
+bounds:899,2,895,319
+super_game/cronus1_00000
+bounds:2,970,1888,1073
+super_game/Шар 3аа
+bounds:951,323,788,645
+super_game/стерти надпис
+bounds:2,323,947,645
+
+super_game_5.png
+size:2024,1849
+filter:Linear,Linear
+pma:true
+super_game/cronus/cronus_00024
+bounds:2,453,895,319
+super_game/cronus/cronus_00025
+bounds:2,132,895,319
+super_game/hades/hades_00005
+bounds:899,421,770,351
+super_game/hades/hades_00006
+bounds:899,68,770,351
+super_game/hades/hades_00007
+bounds:1671,2,770,351
+rotate:90
+super_game/hades1_00000
+bounds:2,774,1888,1073
+
+super_game_6.png
+size:1892,1849
+filter:Linear,Linear
+pma:true
+super_game/hades/hades_00008
+bounds:2,2,770,351
+rotate:90
+super_game/hades/hades_00009
+bounds:355,2,770,351
+rotate:90
+super_game/hades/hades_00010
+bounds:708,2,770,351
+rotate:90
+super_game/hades/hades_00011
+bounds:1061,2,770,351
+rotate:90
+super_game/hades/hades_00012
+bounds:1414,2,770,351
+rotate:90
+super_game/poseidon1_00000
+bounds:2,774,1888,1073
+
+super_game_7.png
+size:1892,1849
+filter:Linear,Linear
+pma:true
+super_game/hades/hades_00013
+bounds:2,2,770,351
+rotate:90
+super_game/hades/hades_00014
+bounds:355,2,770,351
+rotate:90
+super_game/hades/hades_00015
+bounds:708,2,770,351
+rotate:90
+super_game/hades/hades_00016
+bounds:1061,2,770,351
+rotate:90
+super_game/hades/hades_00017
+bounds:1414,2,770,351
+rotate:90
+super_game/zeus1_00000
+bounds:2,774,1888,1073
+
+super_game_8.png
+size:1958,1809
+filter:Linear,Linear
+pma:true
+super_game/hades/hades_00018
+bounds:2,421,770,351
+super_game/hades/hades_00019
+bounds:1605,1037,770,351
+rotate:90
+super_game/hades/hades_00020
+bounds:2,68,770,351
+super_game/hades/hades_00021
+bounds:774,421,770,351
+super_game/hades/hades_00022
+bounds:774,68,770,351
+super_game/hades/hades_00023
+bounds:1546,2,770,351
+rotate:90
+super_game/Нова папка/u_win/u_win_00000_00000
+bounds:2,774,1601,1033
+
+super_game_9.png
+size:2031,2031
+filter:Linear,Linear
+pma:true
+super_game/zeus/zeus_00006
+bounds:2,1346,683,334
+rotate:90
+super_game/zeus/zeus_00007
+bounds:2,661,683,334
+rotate:90
+super_game/zeus/zeus_00008
+bounds:2,325,683,334
+super_game/zeus/zeus_00009
+bounds:338,1346,683,334
+rotate:90
+super_game/zeus/zeus_00010
+bounds:338,661,683,334
+rotate:90
+super_game/zeus/zeus_00011
+bounds:674,1695,683,334
+super_game/zeus/zeus_00012
+bounds:1359,1346,683,334
+rotate:90
+super_game/zeus/zeus_00013
+bounds:1695,1346,683,334
+rotate:90
+super_game/zeus/zeus_00014
+bounds:674,1359,683,334
+super_game/zeus/zeus_00015
+bounds:674,1023,683,334
+super_game/zeus/zeus_00016
+bounds:674,687,683,334
+super_game/zeus/zeus_00017
+bounds:1359,661,683,334
+rotate:90
+super_game/zeus/zeus_00018
+bounds:1695,661,683,334
+rotate:90
+super_game/zeus/zeus_00019
+bounds:687,2,683,334
+rotate:90
+super_game/zeus/zeus_00020
+bounds:1023,2,683,334
+rotate:90

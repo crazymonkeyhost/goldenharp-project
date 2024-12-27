@@ -1,0 +1,38 @@
+{
+  "name": "deset-treasure",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc && vite build",
+    "assets": "assetpack -c ./.assetpack.js",
+    "predev": "npm run assets",
+    "prebuild": "npm run assets",
+    "preview": "vite preview",
+    "prettier-fix": "prettier ./src --write",
+    "deploy": "vercel --prod"
+  },
+  "devDependencies": {
+    "@assetpack/core": "^1.1.1",
+    "@babel/plugin-proposal-decorators": "^7.24.7",
+    "@eslint/js": "^9.8.0",
+    "@types/eslint__js": "^8.42.3",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "3.3.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^7.17.0",
+    "vite": "^5.3.4",
+    "vite-plugin-babel": "^1.2.0",
+    "vite-plugin-checker": "^0.7.2"
+  },
+  "dependencies": {
+    "@esotericsoftware/spine-pixi-v8": "^4.2.70",
+    "@pixi/ui": "^2.1.2",
+    "gsap": "^3.12.5",
+    "pixi.js": "^8.5.2"
+  }
+}
