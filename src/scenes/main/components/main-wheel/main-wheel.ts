@@ -130,6 +130,7 @@ export class MainWheel extends Container {
         angle: angleTo,
         duration,
         // ease: 'power1.out',
+        // ease: 'power1.out',
         ease: 'none',
       });
     });
