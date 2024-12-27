@@ -1,6 +1,6 @@
 {
 "skeleton": {
-	"hash": "9sAa0NVCcig",
+	"hash": "M/TX8/w206c",
 	"spine": "4.1-from-4.2.38",
 	"x": -49.5,
 	"y": -48,
@@ -13,11 +13,15 @@
 	{ "name": "root" },
 	{ "name": "bone", "parent": "root" },
 	{ "name": "bonus1", "parent": "bone", "icon": "handLeft" },
-	{ "name": "bonus2", "parent": "bone", "icon": "handLeft" }
+	{ "name": "bonus2", "parent": "bone", "icon": "handLeft" },
+	{ "name": "result", "parent": "bonus1", "x": 24.31, "y": 25.08 },
+	{ "name": "result2", "parent": "bonus2", "x": 21.91, "y": 25.77 }
 ],
 "slots": [
-	{ "name": "bonus_00005", "bone": "bonus1", "color": "ffffff00", "attachment": "bonus/bonus_" },
-	{ "name": "wilds_00005", "bone": "bonus2", "color": "ffffff00", "attachment": "wilds/wilds_" }
+	{ "name": "bonus_00005", "bone": "bonus1", "attachment": "bonus/bonus_" },
+	{ "name": "wilds_00005", "bone": "bonus2", "attachment": "wilds/wilds_" },
+	{ "name": "result", "bone": "result" },
+	{ "name": "result2", "bone": "result2" }
 ],
 "skins": [
 	{
@@ -30,7 +34,7 @@
 					"triangles": [ 1, 2, 3, 1, 3, 0 ],
 					"vertices": [ 1, 2, 49.5, -48, 1, 1, 2, -49.5, -48, 1, 1, 2, -49.5, 48, 1, 1, 2, 49.5, 48, 1 ],
 					"hull": 4,
-					"sequence": { "count": 23, "start": 5, "digits": 5 },
+					"sequence": { "count": 22, "start": 5, "digits": 5 },
 					"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
 					"width": 99,
 					"height": 96
@@ -43,7 +47,7 @@
 					"triangles": [ 1, 2, 3, 1, 3, 0 ],
 					"vertices": [ 1, 3, 49.5, -48, 1, 1, 3, -49.5, -48, 1, 1, 3, -49.5, 48, 1, 1, 3, 49.5, 48, 1 ],
 					"hull": 4,
-					"sequence": { "count": 23, "start": 5, "digits": 5 },
+					"sequence": { "count": 22, "start": 5, "digits": 5 },
 					"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
 					"width": 99,
 					"height": 96
@@ -61,13 +65,36 @@
 				]
 			}
 		},
+		"bones": {
+			"bonus1": {
+				"scale": [
+					{
+						"curve": [ 0.189, 1, 0.378, 1.081, 0.189, 1, 0.378, 1.081 ]
+					},
+					{
+						"time": 0.5667,
+						"x": 1.081,
+						"y": 1.081,
+						"curve": [ 0.744, 1.081, 0.922, 1, 0.744, 1.081, 0.922, 1 ]
+					},
+					{ "time": 1.1 }
+				]
+			}
+		},
 		"attachments": {
 			"default": {
 				"bonus_00005": {
 					"bonus/bonus_": {
 						"sequence": [
 							{ "mode": "once", "delay": 0.05 },
-							{ "time": 1.1, "mode": "once", "index": 22 }
+							{ "time": 1.1, "mode": "once", "index": 18 }
+						]
+					}
+				},
+				"wilds_00005": {
+					"wilds/wilds_": {
+						"sequence": [
+							{ "mode": "once", "delay": 0.05 }
 						]
 					}
 				}
@@ -82,13 +109,29 @@
 				]
 			}
 		},
+		"bones": {
+			"bonus2": {
+				"scale": [
+					{
+						"curve": [ 0.189, 1, 0.378, 1.081, 0.189, 1, 0.378, 1.081 ]
+					},
+					{
+						"time": 0.5667,
+						"x": 1.081,
+						"y": 1.081,
+						"curve": [ 0.744, 1.081, 0.922, 1, 0.744, 1.081, 0.922, 1 ]
+					},
+					{ "time": 1.1 }
+				]
+			}
+		},
 		"attachments": {
 			"default": {
 				"wilds_00005": {
 					"wilds/wilds_": {
 						"sequence": [
 							{ "mode": "once", "delay": 0.05 },
-							{ "time": 1.1667, "mode": "once", "index": 18 }
+							{ "time": 1.1, "mode": "once", "index": 21 }
 						]
 					}
 				}

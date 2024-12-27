@@ -569,6 +569,7 @@ export class MainScene extends Scene<'main', GoldenHarpGame> {
 
     this.switchToSuperGameHero(bonusData.freespin_trigger);
     this.game.background.switchToActualSuperGame(bonusData.freespin_trigger);
+    this.logo.switchToSuperGame();
 
     if (bonusData.freespins_win && bonusData.freespins_win > 0) {
       this.game.model.freeSpinsBank.push({
@@ -625,6 +626,7 @@ export class MainScene extends Scene<'main', GoldenHarpGame> {
     await this.game.fadeTransition.fadeIn();
 
     this.game.background.switchToMain();
+    this.logo.switchToNormal();
     this.game.hero.switchToMedusa();
     this.playGui.hideFreeSpinsField();
     this.game.winPopup.hide();

@@ -4,8 +4,6 @@ filter:Linear,Linear
 pma:true
 bonus/bonus_00005
 bounds:2,198,99,96
-bonus/bonus_00027
-bounds:2,198,99,96
 bonus/bonus_00006
 bounds:2,100,99,96
 bonus/bonus_00007
@@ -49,8 +47,6 @@ bounds:709,198,99,96
 bonus/bonus_00026
 bounds:608,2,99,96
 wilds/wilds_00005
-bounds:709,100,99,96
-wilds/wilds_00027
 bounds:709,100,99,96
 wilds/wilds_00006
 bounds:810,198,99,96

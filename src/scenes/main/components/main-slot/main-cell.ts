@@ -68,12 +68,18 @@ export class MainCell extends Cell {
   }
 
   protected createsSpineAnimation() {
-    // return {} as Spine;
-
     this.spineAnimation = Spine.from({
       atlas: 'elements.atlas',
       skeleton: 'elements.json',
     });
+
+
+    // this.spineAnimation =  Spine.from({
+    //   skeleton: 'Rabbit.json',
+    //   atlas: 'TPT_spine.atlas',
+    // });
+
+    console.count('Spine created');
 
     this.animationsContainer.addChild(this.spineAnimation);
 
@@ -248,10 +254,10 @@ export class MainCell extends Cell {
 
     this.updateToDynamicView();
 
-    spineAnimation.state.setAnimation(1, 'circle');
-    spineAnimation.state.addAnimation(2, 'explosion', false, 0.5);
+    spineAnimation.state.setAnimation(1, CIRCLE_ANIMATION);
+    spineAnimation.state.addAnimation(2, EXPLOSION_ANIMATION, false, 0.5);
 
-    await waitSpineEnds(spineAnimation, 'explosion');
+    await waitSpineEnds(spineAnimation, EXPLOSION_ANIMATION);
 
     this.destroySpineAnimation();
 
@@ -272,7 +278,7 @@ export class MainCell extends Cell {
     const animationName = this.mapIdToWinAnimation().win;
 
     spineAnimation.state.setAnimation(0, animationName, false);
-    spineAnimation.state.setAnimation(1, 'circle', false);
+    spineAnimation.state.setAnimation(1, CIRCLE_ANIMATION, false);
 
     await waitSpineEnds(spineAnimation, animationName);
 
@@ -290,6 +296,13 @@ export class MainCell extends Cell {
     standard2: string;
     win: string;
   } {
+    //
+    // return {
+    //   standard1: 'symbol_run',
+    //   standard2: 'symbol_idle_loop',
+    //   win: 'dance_shuffle'
+    // }
+
     switch (this.id) {
       case SYMBOLS.LYRE:
         return {
@@ -395,3 +408,9 @@ export class MainCell extends Cell {
 }
 
 export type WinType = 'normal' | 'explode';
+
+
+const CIRCLE_ANIMATION = 'circle';
+// const CIRCLE_ANIMATION = 'dance_foot_rhythm';
+const EXPLOSION_ANIMATION = 'explosion';
+// const EXPLOSION_ANIMATION = 'dance_jamming';

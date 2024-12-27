@@ -560,7 +560,7 @@ export class LocalServerApi {
       demo: 0,
       freespins_bet_level: bet,
       freespins_hash: 'hash-token-fs',
-      freespins_win: 3,
+      freespins_win: 10,
       bet,
       winType: winType,
       freespin_trigger: winType,
