@@ -1,766 +1,737 @@
-import {Scene} from '@/core/scene/Scene';
-import {wait} from '@/core/util/time';
-import {Assets, Container} from 'pixi.js';
-import {MaybeError, GoldenHarpGame} from '@/game/golden-harp-game';
-import {PlayGui} from './components/play-gui/play-gui';
-import {ReelsSpot} from './components/reels-spot';
-import {MainSlot} from '@/scenes/main/components/main-slot/main-slot';
-import {autoplayService, AutoplayService, StartAutoplayData} from '@/game/services/autoplay-service';
-import {keyboardService} from '@/core/services/keyboard-service';
-import {settingsService, SettingsService} from '@/game/services/settings-service';
-import {SpinResultDO} from '@/data/DO/spin-result-do';
-import {slotConfig, SYMBOLS} from '@/config/slot-config';
-import {roundNumber} from '@/core/util/math';
-import {SuperGameResponse, TCascade, TCombination} from '@/api/response-types';
-import {InfoPageLayout} from './components/info/info-page-layout';
-import {SettingsPageLayout} from './components/settings/settings-page-layout';
-import {BuyBonusModal} from '@/scenes/main/components/buy-bonus/buy-bonus-modal';
-import {WinLineValueCounter} from '@/scenes/main/components/win-line-value-counter';
-import {Spine} from '@esotericsoftware/spine-pixi-v8';
-import {toCanvasCenter} from '@/core/services/resize/resize.service';
-import {isSpecialSymbol} from '@/api/utils/slot-logic-utils';
-import {Logo} from '@/scenes/main/components/logo';
-import {MainWheel} from '@/scenes/main/components/main-wheel/main-wheel';
+import { Scene } from '@/core/scene/Scene';
+import { Assets, Container } from 'pixi.js';
+import { MaybeError, GoldenHarpGame } from '@/game/golden-harp-game';
+import { PlayGui } from './components/play-gui/play-gui';
+import { ReelsSpot } from './components/reels-spot';
+import { MainSlot } from '@/scenes/main/components/main-slot/main-slot';
+import { autoplayService, AutoplayService, StartAutoplayData } from '@/game/services/autoplay-service';
+import { keyboardService } from '@/core/services/keyboard-service';
+import { settingsService, SettingsService } from '@/game/services/settings-service';
+import { SpinResultDO } from '@/data/DO/spin-result-do';
+import { slotConfig, SYMBOLS } from '@/config/slot-config';
+import { roundNumber } from '@/core/util/math';
+import { SuperGameResponse, TCascade, TCombination } from '@/api/response-types';
+import { InfoPageLayout } from './components/info/info-page-layout';
+import { SettingsPageLayout } from './components/settings/settings-page-layout';
+import { BuyBonusModal } from '@/scenes/main/components/buy-bonus/buy-bonus-modal';
+import { WinLineValueCounter } from '@/scenes/main/components/win-line-value-counter';
+import { isSpecialSymbol } from '@/api/utils/slot-logic-utils';
+import { Logo } from '@/scenes/main/components/logo';
+import { MainWheel } from '@/scenes/main/components/main-wheel/main-wheel';
+import { sequence } from '@/core/util/time';
 
 export class MainScene extends Scene<'main', GoldenHarpGame> {
-	private heroContainer = new Container();
+  private heroContainer = new Container();
 
-	private slotSpinningPromise: Promise<void> | null = null;
+  private pendingRoundPromise = Promise.resolve();
 
-	private pendingRoundPromise = Promise.resolve();
+  private roundPromiseResolver: () => void;
 
-	private roundPromiseResolver: () => void;
+  private bonusResolver: () => void;
 
-	private bonusResolver: () => void;
+  private skip: () => void = () => {};
 
-	private skip: () => void = () => {
-	};
+  private isTerminated = false;
 
-	private isTerminated = false;
+  private canStartRound = true;
 
-	private canStartRound = true;
+  private isRoundActive = false;
 
-	private isRoundActive = false;
+  private isAutoFreeSpin = false;
 
-	private isAutoFreeSpin = false;
+  private logo: Logo;
 
-	private logo: Logo;
+  private slot: MainSlot;
 
-	private slot: MainSlot;
+  private wheel: MainWheel;
 
-	private wheel: MainWheel;
+  private playGui: PlayGui;
 
-	private playGui: PlayGui;
+  private autoplayService: AutoplayService;
 
-	private autoplayService: AutoplayService;
+  private settingsPopupsContainer = new Container();
 
-	private settingsPopupsContainer = new Container();
+  private winLineValueCounter: WinLineValueCounter;
 
-	private winLineValueCounter: WinLineValueCounter;
+  private settingsService: SettingsService;
 
-	private settingsService: SettingsService;
+  private isFirstRun = true;
 
-	private isFirstRun = true;
+  constructor() {
+    super('main');
 
-	constructor() {
-		super('main');
+    this.autoplayService = autoplayService;
 
-		this.autoplayService = autoplayService;
+    this.settingsService = settingsService;
+  }
 
-		this.settingsService = settingsService;
-	}
+  async preload(cb: (progress: number) => void): Promise<void> {
+    await Assets.loadBundle(['main'], (progress) => {
+      cb?.(progress);
+    });
+  }
 
-	async preload(cb: (progress: number) => void): Promise<void> {
-		await Assets.loadBundle(['main'], (progress) => {
-			cb?.(progress);
-		});
-	}
+  async create(): Promise<void> {
+    this.game.createMainGamesUI();
 
-	async create(): Promise<void> {
-		this.game.createMainGamesUI();
+    this.logo = new Logo();
+    this.stage.addChild(this.logo);
 
-		this.logo = new Logo();
-		this.stage.addChild(this.logo);
+    // reels spot
+    const spot = new ReelsSpot();
+    this.stage.addChild(spot);
 
-		// reels spot
-		const spot = new ReelsSpot();
-		this.stage.addChild(spot);
+    // save spot for future use
+    this.stage.addChild(this.heroContainer);
 
-		// save spot for future use
-		this.stage.addChild(this.heroContainer);
+    this.slot = new MainSlot(
+      settingsService,
+      slotConfig.reels,
+      slotConfig.reelWindow,
+      this.game.model.initialCells || slotConfig.defaultInitialCells,
+    );
+    this.slot.winCellsTopContainer = spot.winCellsTopContainer;
+    spot.winLinesContainer.x -= this.slot.getSlotWidth() / 2;
+    spot.winLinesContainer.y -= this.slot.getSlotHeight() / 2;
+    spot.slotSpot.addChild(this.slot);
 
-		this.slot = new MainSlot(
-			settingsService,
-			slotConfig.reels,
-			slotConfig.reelWindow,
-			this.game.model.initialCells || slotConfig.defaultInitialCells,
-		);
-		this.slot.winCellsTopContainer = spot.winCellsTopContainer;
-		spot.winLinesContainer.x -= this.slot.getSlotWidth() / 2;
-		spot.winLinesContainer.y -= this.slot.getSlotHeight() / 2;
-		spot.slotSpot.addChild(this.slot);
+    this.winLineValueCounter = new WinLineValueCounter();
+    this.stage.addChild(this.winLineValueCounter);
 
-		this.winLineValueCounter = new WinLineValueCounter();
-		this.stage.addChild(this.winLineValueCounter);
+    this.wheel = new MainWheel();
+    this.game.background.wheelContainer.addChild(this.wheel);
 
-		this.wheel = new MainWheel();
-		this.game.background.wheelContainer.addChild(this.wheel);
+    const infoPage = new InfoPageLayout(this.game.model);
+    this.game.layers.overlay.addChild(infoPage);
 
-		const infoPage = new InfoPageLayout(this.game.model);
-		this.game.layers.overlay.addChild(infoPage);
+    const settingsPage = new SettingsPageLayout(this.game.model, {
+      startAutoplay: this.startAutoplay.bind(this),
+      betSelected: this.onBetChange.bind(this),
+    });
+    this.game.layers.overlay.addChild(settingsPage);
 
-		const settingsPage = new SettingsPageLayout(this.game.model, {
-			startAutoplay: this.startAutoplay.bind(this),
-			betSelected: this.onBetChange.bind(this),
-		});
-		this.game.layers.overlay.addChild(settingsPage);
+    const buyBonusModal = new BuyBonusModal(this.game.model);
+    this.game.layers.overlay.addChild(buyBonusModal);
 
-		const buyBonusModal = new BuyBonusModal(this.game.model);
-		this.game.layers.overlay.addChild(buyBonusModal);
+    this.playGui = new PlayGui({
+      settingsClick: () => settingsPage.show('settings'),
+      openAutoplayMenu: () => settingsPage.show('autoplay'),
+      betClick: () => settingsPage.show('bet'),
+      spinClick: this.spinClicked.bind(this),
+      infoClick: () => infoPage.show(),
+      homeClick: () => this.goHome(),
+      buyBonusClick: () => buyBonusModal.show(),
+    });
+    this.stage.addChild(this.playGui);
 
-		this.playGui = new PlayGui({
-			settingsClick: () => settingsPage.show('settings'),
-			openAutoplayMenu: () => settingsPage.show('autoplay'),
-			betClick: () => settingsPage.show('bet'),
-			spinClick: this.spinClicked.bind(this),
-			infoClick: () => infoPage.show(),
-			homeClick: () => this.goHome(),
-			buyBonusClick: () => {
-			} /*buyBonusModal.show('buy')*/,
-			profileClick: () => buyBonusModal.show(),
-		});
-		this.stage.addChild(this.playGui);
+    this.resetState();
+  }
 
-		this.resetState();
+  async onEnter(): Promise<void> {
+    super.onEnter();
 
-		const machine = Spine.from({
-			skeleton: 'additional_machine.json',
-			atlas: 'additional_machine.atlas',
-		});
+    keyboardService.addSpaceListener(this.spinClicked.bind(this));
 
-		this.stage.addChild(machine);
-		toCanvasCenter(machine);
+    this.bonusResolver?.();
 
-		//@ts-ignore
-		window.machine = machine;
-	}
+    if (this.heroContainer.children.length === 0) {
+      this.heroContainer.addChild(this.game.hero);
+    }
 
-	async onEnter(): Promise<void> {
-		super.onEnter();
+    if (!this.isFirstRun) return;
 
-		keyboardService.addSpaceListener(this.spinClicked.bind(this));
+    this.game.background.switchToMain();
 
-		this.bonusResolver?.();
+    this.game.hero.switchToMedusa();
 
-		if (this.heroContainer.children.length === 0) {
-			this.heroContainer.addChild(this.game.hero);
-		}
+    // reset state
+    this.canStartRound = false;
 
-		if (!this.isFirstRun) return;
+    this.isFirstRun = false;
 
-		this.game.background.switchToMain();
+    this.updateBalance();
 
-		this.game.hero.switchToMedusa();
+    this.setWin(0);
 
-		// reset state
-		this.canStartRound = false;
+    // check unplayed bonuses
+    if (this.game.model.playerData?.supergame && this.game.model.playerData?.supergame?.length > 0) {
+      for (const hash of this.game.model.playerData.supergame) {
+        if (!hash.supergame_hash) continue;
 
-		this.isFirstRun = false;
+        const result = await this.playSuperGame(hash.supergame_hash);
 
-		this.updateBalance();
+        if (!result) return;
 
-		this.setWin(0);
+        this.setBalance(result.after_balance);
+      }
+    }
 
-		// check unplayed bonuses
-		if (this.game.model.playerData?.supergame && this.game.model.playerData?.supergame?.length > 0) {
-			for (const hash of this.game.model.playerData.supergame) {
-				if (!hash.supergame_hash) continue;
+    if (!this.game.model.currentFreeSpinsSession && this.game.model.nextFreeSpinSession()) {
+      await this.triggerFreeSpins();
+      this.canStartRound = true;
 
-				const result = await this.playSuperGame(hash.supergame_hash);
+      this.playNextAutoRound();
+    } else {
+      this.canStartRound = true;
+    }
+  }
 
-				if (!result) return;
+  async onLeave(): Promise<void> {
+    super.onLeave();
 
-				this.setBalance(result.after_balance);
-			}
-		}
+    keyboardService.removeSpaceListener(this.spinClicked.bind(this));
 
-		if (!this.game.model.currentFreeSpinsSession && this.game.model.nextFreeSpinSession()) {
-			await this.triggerFreeSpins();
-			this.canStartRound = true;
+    this.settingsPopupsContainer.visible = false;
+  }
 
-			this.playNextAutoRound();
-		} else {
-			this.canStartRound = true;
-		}
-	}
+  private isFreeSpinMode = false;
 
-	async onLeave(): Promise<void> {
-		super.onLeave();
+  // reset game play based on init user data
+  resetState() {
+    this.updateBet();
+  }
 
-		keyboardService.removeSpaceListener(this.spinClicked.bind(this));
+  onBetChange(value: number) {
+    this.game.model.bet = value;
+    this.updateBet();
+  }
 
-		this.settingsPopupsContainer.visible = false;
-	}
+  private updateBet() {
+    this.playGui.updateBet(this.game.model.bet, this.game.model.betRange);
+  }
 
-	private isFreeSpinMode = false;
+  private updateBalance() {
+    this.playGui.updateBalance(this.game.model.balance);
+  }
 
-	// reset game play based on init user data
-	resetState() {
-		this.updateBet();
-	}
+  private updateFreeSpins() {
+    this.playGui.updateFreeSpins(this.game.model.freeSpins);
+  }
 
-	onBetChange(value: number) {
-		this.game.model.bet = value;
-		this.updateBet();
-	}
+  // flow functions
+  setBalance(value: number) {
+    this.game.model.balance = value;
+    this.updateBalance();
+  }
 
-	private updateBet() {
-		this.playGui.updateBet(this.game.model.bet, this.game.model.betRange);
-	}
+  setWin(value: number, withCounter = false) {
+    value = roundNumber(value);
 
-	private updateBalance() {
-		this.playGui.updateBalance(this.game.model.balance);
-	}
+    console.log('set win', value, withCounter);
+    const successResponse = this.game.model.currentResponse;
 
-	private updateFreeSpins() {
-		this.playGui.updateFreeSpins(this.game.model.freeSpins);
-	}
+    // control if we not send total win bigger than server response
+    if (successResponse) {
+      const threshold = this.isFreeSpinMode ? successResponse?.freespin_total_win : successResponse?.total_win;
 
-	// flow functions
-	setBalance(value: number) {
-		this.game.model.balance = value;
-		this.updateBalance();
-	}
+      if (threshold !== undefined && value > threshold) {
+        throw new Error(`Total win is bigger than server response. Total win: ${value}, threshold: ${threshold}`);
+      }
+    }
 
-	setWin(value: number, withCounter = false) {
-		value = roundNumber(value);
+    this.game.model.win = value;
+    this.playGui.updateWin(value, withCounter);
+  }
 
-		console.log('set win', value, withCounter);
-		const successResponse = this.game.model.currentResponse;
+  setFreeSpins(value: number) {
+    this.game.model.freeSpins = value;
+    this.updateFreeSpins();
+  }
 
-		// control if we not send total win bigger than server response
-		if (successResponse) {
-			const threshold = this.isFreeSpinMode ? successResponse?.freespin_total_win : successResponse?.total_win;
+  startAutoplay(data: StartAutoplayData) {
+    this.autoplayService.start(data);
 
-			if (threshold !== undefined && value > threshold) {
-				throw new Error(`Total win is bigger than server response. Total win: ${value}, threshold: ${threshold}`);
-			}
-		}
+    if (!this.isRoundActive) {
+      this.startRound();
+    } else {
+      this.skip();
+    }
+  }
 
-		this.game.model.win = value;
-		this.playGui.updateWin(value, withCounter);
-	}
+  async spinClicked(_type: 'autoplay' | 'manual' = 'manual') {
+    if (this.autoplayService.isActive() || this.isAutoFreeSpin || !this.canStartRound) {
+      this.isAutoFreeSpin = false;
 
-	setFreeSpins(value: number) {
-		this.game.model.freeSpins = value;
-		this.updateFreeSpins();
-	}
+      this.skip();
 
-	startAutoplay(data: StartAutoplayData) {
-		this.autoplayService.start(data);
+      return;
+    }
 
-		if (!this.isRoundActive) {
-			this.startRound();
-		} else {
-			this.skip();
-		}
-	}
+    if (this.canStartRound) {
+      this.startRound();
+    }
+  }
 
-	async spinClicked(_type: 'autoplay' | 'manual' = 'manual') {
-		if (this.autoplayService.isActive() || this.isAutoFreeSpin || !this.canStartRound) {
-			this.isAutoFreeSpin = false;
-			this.skip();
-			return;
-		}
+  async startRound() {
+    if (this.isTerminated) return;
 
-		if (this.canStartRound) {
-			this.startRound();
-		}
-	}
+    this.canStartRound = false;
 
-	async startRound() {
-		if (this.isTerminated) return;
+    // if round is pending, skip
+    this.skip();
 
-		this.canStartRound = false;
+    await this.pendingRoundPromise;
 
-		// if round is pending, skip
-		this.skip();
+    if (this.isRoundActive) {
+      throw new Error('Round already active');
+    }
 
-		await this.pendingRoundPromise;
+    // reset state from previous round
+    this.winLineValueCounter.hide();
 
-		if (this.isRoundActive) {
-			throw new Error('Round already active');
-		}
+    // reset keys and chest if we had respin in prev round
 
-		// reset state from previous round
-		this.winLineValueCounter.hide();
+    this.isRoundActive = true;
 
-		// reset keys and chest if we had respin in prev round
+    this.pendingRoundPromise = new Promise((resolve) => (this.roundPromiseResolver = resolve));
 
-		this.isRoundActive = true;
+    const isFirstFreeSpin = !this.isFreeSpinMode && this.game.model.freeSpins > 0;
 
-		this.pendingRoundPromise = new Promise((resolve) => (this.roundPromiseResolver = resolve));
+    const balanceBeforeSpin = this.game.model.balance;
 
-		const isFirstFreeSpin = !this.isFreeSpinMode && this.game.model.freeSpins > 0;
+    if (isFirstFreeSpin) {
+      this.isFreeSpinMode = true;
+    }
 
-		const balanceBeforeSpin = this.game.model.balance;
+    // not reset win if free spin mode
+    if (!this.isFreeSpinMode || isFirstFreeSpin) {
+      this.setWin(0, false);
+    }
 
-		if (isFirstFreeSpin) {
-			this.isFreeSpinMode = true;
-		}
+    // deduct bet from balance right away (adjusting balance then by server response)
+    // only if not in free spin mode
+    if (!this.isFreeSpinMode) {
+      if (this.game.model.balance < this.game.model.bet) {
+        if (await this.game.handleInsufficientBalance()) {
+          this.canStartRound = true;
+          this.isRoundActive = false;
+          if (this.autoplayService.isActive()) {
+            this.autoplayService.stop();
+          }
+          this.roundPromiseResolver();
+          return;
+        } else {
+          this.disable();
+          this.skip();
+          return;
+        }
+      }
 
-		// not reset win if free spin mode
-		if (!this.isFreeSpinMode || isFirstFreeSpin) {
-			this.setWin(0, false);
-		}
+      this.setBalance(this.game.model.balance - this.game.model.bet);
+    }
 
-		// deduct bet from balance right away (adjusting balance then by server response)
-		// only if not in free spin mode
-		if (!this.isFreeSpinMode) {
-			if (this.game.model.balance < this.game.model.bet) {
-				if (await this.game.handleInsufficientBalance()) {
-					this.canStartRound = true;
-					this.isRoundActive = false;
-					if (this.autoplayService.isActive()) {
-						this.autoplayService.stop();
-					}
-					this.roundPromiseResolver();
-					return;
-				} else {
-					this.disable();
-					this.skip();
-					return;
-				}
-			}
+    // decrease free spins if in free spin mode
+    // later in playRoundResults() method will be updated from server response to actual value
+    if (this.isFreeSpinMode) {
+      this.setFreeSpins(this.game.model.freeSpins - 1);
+    }
 
-			this.setBalance(this.game.model.balance - this.game.model.bet);
-		}
+    const serverPromise = this.game.getSpinData(this.isFreeSpinMode, balanceBeforeSpin);
 
-		// decrease free spins if in free spin mode
-		// later in playRoundResults() method will be updated from server response to actual value
-		if (this.isFreeSpinMode) {
-			this.setFreeSpins(this.game.model.freeSpins - 1);
-		}
+    Promise.all([serverPromise])
+      .then(([response]) => {
+        this.onBetResponse(response);
+      })
+      .catch((e) => {
+        this.onError(e, balanceBeforeSpin);
+      });
+  }
 
-		const dissapearPromise = this.slot.disappear();
+  async onError(e: MaybeError, balanceBeforeSpin: number) {
+    console.error(e);
+    this.disable();
+    this.skip?.();
 
-		const {done: minSpinTimePromise, cancel: skipSpin} = wait(0);
+    // this.slot.stop(this.game.model.betResponse?.spin?.spin_elements || slotConfig.defaultInitialCells);
 
-		this.skip = skipSpin;
+    this.setBalance(balanceBeforeSpin);
 
-		const serverPromise = this.game.getSpinData(this.isFreeSpinMode, balanceBeforeSpin);
+    if (this.autoplayService.isActive()) {
+      this.autoplayService.stop();
+    }
 
-		Promise.all([serverPromise, dissapearPromise])
-			.then(([response]) => {
-				this.onBetResponse(response);
-			})
-			.catch((e) => {
-				dissapearPromise.then(() => {
-					this.onError(e, balanceBeforeSpin);
-				});
-			});
-	}
+    if (this.isFreeSpinMode) {
+      this.isAutoFreeSpin = false;
 
-	async onError(e: MaybeError, balanceBeforeSpin: number) {
-		console.error(e);
-		this.disable();
-		this.skip?.();
+      // restore free spins
+      this.setFreeSpins(
+        this.game.model.currentResponse?.freespin_left || this.game.model.currentFreeSpinsSession?.freespin_left || 0,
+      );
+    }
 
-		this.slot.stop(this.game.model.betResponse?.spin?.spin_elements || slotConfig.defaultInitialCells);
+    const canContinue = await this.game.handleServerError(e);
 
-		this.setBalance(balanceBeforeSpin);
+    if (!canContinue) return;
 
-		if (this.autoplayService.isActive()) {
-			this.autoplayService.stop();
-		}
+    this.enable();
 
-		if (this.isFreeSpinMode) {
-			this.isAutoFreeSpin = false;
+    this.roundPromiseResolver?.();
 
-			// restore free spins
-			this.setFreeSpins(
-				this.game.model.currentResponse?.freespin_left || this.game.model.currentFreeSpinsSession?.freespin_left || 0,
-			);
-		}
+    this.isRoundActive = false;
 
-		const canContinue = await this.game.handleServerError(e);
+    this.canStartRound = true;
+  }
 
-		if (!canContinue) return;
+  disable() {
+    this.playGui.disableButtons();
+  }
 
-		this.enable();
+  enable() {
+    this.playGui.enableButtons();
+  }
 
-		this.roundPromiseResolver?.();
+  private async onBetResponse(response: SpinResultDO) {
+    if (response.freespin.freespin === 1) {
+      this.game.model.freeSpinsBank.unshift({
+        freespin_total: response.freespin.freespin_total,
+        freespin_hash: response.freespin.freespin_hash,
+        freespin_left: response.freespin.freespin_total,
+        bet_level: response.freespin.free_spin_bet_level,
+        freespin_trigger: response.freespin.freespin_trigger,
+      });
+    }
 
-		this.isRoundActive = false;
+    this.setBalance(response.before_balance);
 
-		this.canStartRound = true;
-	}
+    const snakeInOut = async () => {
+      await this.slot.disappear();
+      await this.slot.stop(response.spin.spin_elements);
+    };
 
-	disable() {
-		this.playGui.disableButtons();
-	}
+    await Promise.all([snakeInOut(), this.wheel.spin(response.wheelSymbol)]);
 
-	enable() {
-		this.playGui.enableButtons();
-	}
+    this.playRoundResults();
+  }
 
-	private async onBetResponse(response: SpinResultDO) {
-		if (response.freespin.freespin === 1) {
-			this.game.model.freeSpinsBank.unshift({
-				freespin_total: response.freespin.freespin_total,
-				freespin_hash: response.freespin.freespin_hash,
-				freespin_left: response.freespin.freespin_total,
-				bet_level: response.freespin.free_spin_bet_level,
-				freespin_trigger: response.freespin.freespin_trigger,
-			});
-		}
+  private async playRoundResults() {
+    const response = this.game.model.currentResponse;
 
-		console.clear();
-		console.log('FIRST DRAW');
-		console.table(response.spin.spin_elements);
+    const isFreeSpinMode = this.isFreeSpinMode;
 
-		response.cascades.forEach((cascade, i) => {
-			console.log(`CASCADE #${i + 1}`);
+    // re-update free spins if we are in free spin mode
+    // actually this value is already updated in .startRound() method, so here just
+    // to update from server response
+    if (isFreeSpinMode) {
+      this.setFreeSpins(response.freespin_left);
+    }
 
-			console.table(cascade.win_elements);
+    // const winBefore = this.game.model.win;
 
-			// console.log('CASCADING COMBOS');
-			// cascade.combinations.forEach((combo, i) => {
-			//   console.log(`COMBO#${i + 1}`, JSON.stringify(combo));
-			// });
+    await this.playCascades(response.cascades);
 
-			console.table(cascade.spin_elements);
-		});
+    if (response.spin.spin_win > 0) {
+      await this.winLineValueCounter.countWin(response.spin.spin_win);
+    }
 
-		this.setBalance(response.before_balance);
+    // await linesCompleted;
 
-		await Promise.all([
-			this.slot.stop(response.spin.spin_elements),
-			this.wheel.spin(response.wheelSymbol),
-			await this.slotSpinningPromise,
-		]);
+    // handle jackpot
+    if (this.game.model.hasJackpotWon) {
+      this.winLineValueCounter.hide();
 
-		this.playRoundResults();
-	}
+      await this.game.winPopup.playSummaryWin('jackpot', this.game.model.jackpotAmount);
+    }
 
-	private async playRoundResults() {
-		const response = this.game.model.currentResponse;
+    // trigger super game
+    if (this.game.model.hasSuperGame) {
+      this.winLineValueCounter.hide();
 
-		const isFreeSpinMode = this.isFreeSpinMode;
+      await this.slot.playCellsWin(response.cronusSymbols).done;
 
-		// re-update free spins if we are in free spin mode
-		// actually this value is already updated in .startRound() method, so here just
-		// to update from server response
-		if (isFreeSpinMode) {
-			this.setFreeSpins(response.freespin_left);
-		}
+      const res = await this.playSuperGame(response.supergame.supergame_hash || '');
 
-		// const winBefore = this.game.model.win;
+      if (!res) return;
+    }
 
-		await this.playCascades(response.cascades);
+    const isLastFreeSpin = isFreeSpinMode && response.freespin_left === 0;
 
-		if (response.spin.spin_win > 0) {
-			await this.winLineValueCounter.countWin(response.spin.spin_win);
-		}
+    await this.playGrandWin();
 
-		// await linesCompleted;
+    // need to update win before free spins completion
+    this.setWin(isFreeSpinMode ? response.freespin_total_win : response.total_win);
 
-		// handle jackpot
-		if (this.game.model.hasJackpotWon) {
-			this.winLineValueCounter.hide();
+    // handle free spins completion
+    if (isLastFreeSpin) {
+      this.winLineValueCounter.hide();
 
-			await this.game.winPopup.playSummaryWin('jackpot', this.game.model.jackpotAmount);
-		}
+      await this.completeFreeSpins();
+    }
 
-		// trigger super game
-		if (this.game.model.hasSuperGame) {
-			this.winLineValueCounter.hide();
+    // update balance after all animations
+    this.setBalance(this.game.model.lastServerBalance);
 
-			await this.slot.playCellsWin(response.cronusSymbols).done;
+    if (!this.isFreeSpinMode && this.game.model.nextFreeSpinSession()) {
+      this.winLineValueCounter.hide();
 
-			const res = await this.playSuperGame(response.supergame.supergame_hash || '');
+      await this.triggerFreeSpins();
+    }
 
-			if (!res) return;
-		}
+    this.canStartRound = true;
 
-		const isLastFreeSpin = isFreeSpinMode && response.freespin_left === 0;
+    this.roundCompleted();
+  }
 
-		await this.playGrandWin();
+  async roundCompleted() {
+    this.isRoundActive = false;
+    this.roundPromiseResolver();
 
-		// need to update win before free spins completion
-		this.setWin(isFreeSpinMode ? response.freespin_total_win : response.total_win);
+    this.playNextAutoRound();
+  }
 
-		// handle free spins completion
-		if (isLastFreeSpin) {
-			this.winLineValueCounter.hide();
+  // play next auto round if it is available
+  playNextAutoRound() {
+    const response = this.game.model.currentResponse;
 
-			await this.completeFreeSpins();
-		}
+    const canContinueAP = this.autoplayService.next(
+      response
+        ? {
+            totalWin: response.total_win,
+            totalBet: response.bet,
+          }
+        : null,
+    );
 
-		// update balance after all animations
-		this.setBalance(this.game.model.lastServerBalance);
+    const canContinueFS = this.game.model.freeSpins > 0 && this.isAutoFreeSpin;
 
-		if (!this.isFreeSpinMode && this.game.model.nextFreeSpinSession()) {
-			this.winLineValueCounter.hide();
+    if (canContinueAP || canContinueFS) {
+      this.startRound();
+    }
+  }
 
-			await this.triggerFreeSpins();
-		}
+  private async playSuperGame(hash: string): Promise<SuperGameResponse | null> {
+    let bonusData: SuperGameResponse | null = null;
 
-		this.canStartRound = true;
+    try {
+      bonusData = await this.game.getSuperGameData(hash || '');
+    } catch (e) {
+      this.disable();
+      await this.game.handleServerError(e);
+    }
 
-		this.roundCompleted();
-	}
+    if (!bonusData) return null;
 
-	async roundCompleted() {
-		this.isRoundActive = false;
-		this.roundPromiseResolver();
+    const promise = new Promise<void>((r) => (this.bonusResolver = r));
 
-		this.playNextAutoRound();
-	}
+    await this.game.winPopup.playSuperGameEnter('cronus_game', false);
 
-	// play next auto round if it is available
-	playNextAutoRound() {
-		const response = this.game.model.currentResponse;
+    await this.game.fadeTransition.fadeIn();
 
-		const canContinueAP = this.autoplayService.next(
-			response
-				? {
-					totalWin: response.total_win,
-					totalBet: response.bet,
-				}
-				: null,
-		);
+    // hide win popup under fade in transition state
+    this.game.winPopup.hide();
 
-		const canContinueFS = this.game.model.freeSpins > 0 && this.isAutoFreeSpin;
+    await Assets.loadBundle(['supergame']);
 
-		if (canContinueAP || canContinueFS) {
-			this.startRound();
-		}
-	}
+    const transition = this.game.fadeTransition.fadeOut();
 
-	private async playSuperGame(hash: string): Promise<SuperGameResponse | null> {
-		let bonusData: SuperGameResponse | null = null;
+    this.game.switchScene('supergame', { transitionComplete: transition, customData: bonusData });
 
-		try {
-			bonusData = await this.game.getSuperGameData(hash || '');
-		} catch (e) {
-			this.disable();
-			await this.game.handleServerError(e);
-		}
+    await promise;
 
-		if (!bonusData) return null;
+    this.switchToSuperGameHero(bonusData.freespin_trigger);
+    this.game.background.switchToActualSuperGame(bonusData.freespin_trigger);
+    this.logo.switchToSuperGame();
 
-		const promise = new Promise<void>((r) => (this.bonusResolver = r));
+    if (bonusData.freespins_win && bonusData.freespins_win > 0) {
+      this.game.model.freeSpinsBank.push({
+        freespin_total: bonusData.freespins_win,
+        freespin_left: bonusData.freespins_win,
+        bet_level: bonusData.freespins_bet_level,
+        freespin_hash: bonusData.freespins_hash,
+        freespin_trigger: bonusData.freespin_trigger,
+      });
+    }
 
-		await this.game.winPopup.playSuperGameEnter('cronus_game', false);
+    return bonusData;
+  }
 
-		await this.game.fadeTransition.fadeIn();
+  private async triggerFreeSpins() {
+    // this.winLineValueCounter.hide();
+    const session = this.game.model.currentFreeSpinsSession;
 
-		// hide win popup under fade in transition state
-		this.game.winPopup.hide();
+    if (!session) return;
 
-		await Assets.loadBundle(['supergame']);
+    const total = Math.min(session?.freespin_total || 0, session?.freespin_left || 0);
 
-		const transition = this.game.fadeTransition.fadeOut();
+    if (session?.freespin_trigger === 'normal') {
+      await this.game.winPopup.playFreespinEnter();
 
-		this.game.switchScene('supergame', {transitionComplete: transition, customData: bonusData});
+      await this.game.fadeTransition.fadeIn();
 
-		await promise;
+      this.game.background.switchToFreespin();
+    }
 
-		this.switchToSuperGameHero(bonusData.freespin_trigger);
-		this.game.background.switchToActualSuperGame(bonusData.freespin_trigger);
-		this.logo.switchToSuperGame();
+    this.playGui.showFreeSpinsField();
+    this.setFreeSpins(total);
+    this.game.winPopup.hide();
 
-		if (bonusData.freespins_win && bonusData.freespins_win > 0) {
-			this.game.model.freeSpinsBank.push({
-				freespin_total: bonusData.freespins_win,
-				freespin_left: bonusData.freespins_win,
-				bet_level: bonusData.freespins_bet_level,
-				freespin_hash: bonusData.freespins_hash,
-				freespin_trigger: bonusData.freespin_trigger,
-			});
-		}
+    await this.game.fadeTransition.fadeOut();
 
-		return bonusData;
-	}
+    this.isAutoFreeSpin = true;
+  }
 
-	private async triggerFreeSpins() {
-		// this.winLineValueCounter.hide();
-		const session = this.game.model.currentFreeSpinsSession;
+  private async completeFreeSpins() {
+    const session = this.game.model.currentFreeSpinsSession;
 
-		if (!session) return;
+    if (!session) throw new Error('No free spins session');
 
-		const total = Math.min(session?.freespin_total || 0, session?.freespin_left || 0);
+    if (session.freespin_trigger === 'normal') {
+      await this.game.winPopup.playFreeSpinWin(this.game.model.currentResponse.freespin_total_win);
+    } else {
+      await this.game.winPopup.playSuperGameWin(
+        `${session.freespin_trigger}_win`,
+        this.game.model.currentResponse.freespin_total_win,
+      );
+    }
 
-		if (session?.freespin_trigger === 'normal') {
-			await this.game.winPopup.playFreespinEnter();
+    await this.game.fadeTransition.fadeIn();
 
-			await this.game.fadeTransition.fadeIn();
+    this.game.background.switchToMain();
+    this.logo.switchToNormal();
+    this.game.hero.switchToMedusa();
+    this.playGui.hideFreeSpinsField();
+    this.game.winPopup.hide();
 
-			this.game.background.switchToFreespin();
-		}
+    await this.game.fadeTransition.fadeOut();
 
-		this.playGui.showFreeSpinsField();
-		this.setFreeSpins(total);
-		this.game.winPopup.hide();
+    this.game.model.clearFreeSpinsSession();
+    this.isFreeSpinMode = false;
+    this.isAutoFreeSpin = false;
+  }
 
-		await this.game.fadeTransition.fadeOut();
+  private async playCascades(cascades: TCascade[]) {
+    // cascades = cascades.slice(0,1);
+    for (let i = 0; i < cascades.length; i++) {
+      const cascade = cascades[i];
 
-		this.isAutoFreeSpin = true;
-	}
+      // play cascade combos win
+      await this.playCascade(cascade);
 
-	private async completeFreeSpins() {
-		const session = this.game.model.currentFreeSpinsSession;
+      const wildCombos = cascade.combinations.filter(
+        (combo) => combo.type === 'wild-torch' || combo.type === 'wild-thunder',
+      );
 
-		if (!session) throw new Error('No free spins session');
+      // play normal cells explode
+      const normalExplode = cascade.combinations
+        .filter((combo) => !wildCombos.includes(combo))
+        .map((combo) => combo.items.map((item) => item.location))
+        .flat();
 
-		if (session.freespin_trigger === 'normal') {
-			await this.game.winPopup.playFreeSpinWin(this.game.model.currentResponse.freespin_total_win);
-		} else {
-			await this.game.winPopup.playSuperGameWin(
-				`${session.freespin_trigger}_win`,
-				this.game.model.currentResponse.freespin_total_win,
-			);
-		}
+      await this.slot.explode(normalExplode).done;
 
-		await this.game.fadeTransition.fadeIn();
+      // play wild torch combos explode
+      await this.slot.crystalExplode(wildCombos.map((combo) => combo.items).flat());
 
-		this.game.background.switchToMain();
-		this.logo.switchToNormal();
-		this.game.hero.switchToMedusa();
-		this.playGui.hideFreeSpinsField();
-		this.game.winPopup.hide();
+      console.table(cascade.win_elements);
 
-		await this.game.fadeTransition.fadeOut();
+      // do shift
 
-		this.game.model.clearFreeSpinsSession();
-		this.isFreeSpinMode = false;
-		this.isAutoFreeSpin = false;
-	}
+      console.table(cascade.spin_elements);
+      await this.slot.playShift(
+        cascade.combinations
+          .map((combo) => combo.items.filter((item) => !item.replacedTo).map((item) => item.location))
+          .flat(),
+        cascade.spin_elements,
+      );
+    }
 
-	private async playCascades(cascades: TCascade[]) {
-		// cascades = cascades.slice(0,1);
-		for (let i = 0; i < cascades.length; i++) {
-			const cascade = cascades[i];
+    this.wheel.stopGlow();
+  }
 
-			// play cascade combos win
-			await this.playCascade(cascade);
+  private async playCascade(cascade: TCascade) {
+    // handle replacement first
+    for (const replacement of cascade.replacements) {
+      await this.slot.playComet(replacement.items);
+    }
 
-			const wildCombos = cascade.combinations.filter((combo) => combo.type === 'wild-torch' || combo.type === 'wild-thunder');
+    await this.playNormalCombos(cascade);
 
-			// play normal cells explode
-			const normalExplode = cascade.combinations
-				.filter((combo) => !wildCombos.includes(combo))
-				.map((combo) => combo.items.map((item) => item.location))
-				.flat();
+    // zeus combos
+    const zeusCombos = cascade.combinations.filter((combo) => combo.symbol === SYMBOLS.ZEUS && combo.type === 'normal');
 
-			await this.slot.explode(normalExplode).done;
+    const zeusExploded = zeusCombos.length ? cascade.combinations.filter((combo) => combo.type === 'zeus') : [];
 
-			// play wild torch combos explode
-			await this.slot.effectsManager.crystalExplode(
-				wildCombos.map((combo) => combo.items.map((item) => item.location)).flat(),
-			);
+    for (const combo of zeusCombos) {
+      await this.playCombo(combo).done;
 
-			await wait(200).done;
+      zeusCombos.pop();
 
-			console.table(cascade.win_elements);
+      await this.slot.playLightning(zeusExploded.pop()?.items?.map((item) => item.location) ?? []);
+    }
+  }
 
-			// do shift
+  /** Play all normal combos */
+  private async playNormalCombos(cascade: TCascade) {
+    // usual symbols normal symbols combos play first
+    const normalCombos = cascade.combinations.filter(
+      (combo) => !isSpecialSymbol(combo.symbol) && combo.type === 'normal',
+    );
 
-			console.table(cascade.spin_elements);
-			await this.slot.playShift(
-				cascade.combinations.map((combo) => combo.items.map((item) => item.location)).flat(),
-				cascade.spin_elements,
-			);
-		}
+    const winAfter = this.game.model.win + normalCombos.reduce((acc, combo) => acc + combo.win, 0);
 
-		this.wheel.stopGlow();
-	}
+    const { done, cancel } = sequence(normalCombos.map((combo) => () => this.playCombo(combo)))();
 
-	private async playCascade(cascade: TCascade) {
-		// handle replacement first
-		for (const replacement of cascade.replacements) {
-			await this.slot.effectsManager.commetReplace(replacement.items);
-		}
+    this.skip = cancel;
 
-		const normalCombinations = cascade.combinations.filter((combo) => combo.type === 'normal');
+    await done;
 
-		// usual symbols normal symbols combos play first
-		const normalCombos = normalCombinations.filter((combo) => !isSpecialSymbol(combo.symbol));
-		for (const combo of normalCombos) {
-			await this.playCombo(combo);
-		}
+    // set final win after all combos played or was skipped
+    this.setWin(winAfter, false);
+  }
 
-		// zeus combos
-		const zeusCombos = normalCombinations.filter((combo) => combo.symbol === SYMBOLS.ZEUS);
+  private playCombo(combo: TCombination) {
+    if (combo.win) {
+      this.setWin(this.game.model.win + combo.win, true);
+    }
 
-		const zeusExploded = zeusCombos.length ? cascade.combinations.filter((combo) => combo.type === 'zeus') : [];
+    if (combo.wildFeatured) {
+      this.wheel.glow(true);
+    }
 
-		for (const combo of zeusCombos) {
-			await this.playCombo(combo);
+    return this.slot.playCellsWin(
+      combo.items.map((item) => item.location),
+      'normal',
+    );
+  }
 
-			zeusCombos.pop();
+  private async playGrandWin() {
+    const response = this.game.model.currentResponse;
 
-			await this.slot.effectsManager.playLightning(zeusExploded.pop()?.items?.map((item) => item.location) ?? []);
-		}
-	}
+    if (response.bigwin || response.megawin || response.ultrawin) {
+      this.winLineValueCounter.hide();
+    }
 
-	private async playCombo(combo: TCombination) {
-		if (combo.win) {
-			this.setWin(this.game.model.win + combo.win, true);
-		}
+    if (response.ultrawin) {
+      await this.game.winPopup.playSummaryWin('ultra_win', response.total_win);
+    } else if (response.megawin) {
+      await this.game.winPopup.playSummaryWin('mega_win', response.total_win);
+    } else if (response.bigwin) {
+      await this.game.winPopup.playSummaryWin('big_win', response.total_win);
+    }
+  }
 
-		if (combo.wildFeatured) {
-			this.wheel.glow(true);
-		}
+  private switchToSuperGameHero(superGameType: 'zeus' | 'hades' | 'poseidon') {
+    switch (superGameType) {
+      case 'zeus':
+        this.game.hero.switchToZeus();
+        break;
+      case 'hades':
+        this.game.hero.switchToHades();
+        break;
+      case 'poseidon':
+        this.game.hero.switchToPoseidon();
+        break;
+    }
+  }
 
-		if (this.settingsService.getWinAnimation()) {
-			await this.slot.playCellsWin(
-				combo.items.map((item) => item.location),
-				'normal',
-			).done;
-		}
-	}
+  private goHome() {
+    this.isTerminated = true;
 
-	private async playGrandWin() {
-		const response = this.game.model.currentResponse;
+    if (this.autoplayService.isActive()) {
+      this.autoplayService.stop();
+    }
 
-		if (response.bigwin || response.megawin || response.ultrawin) {
-			this.winLineValueCounter.hide();
-		}
+    this.disable();
 
-		if (response.ultrawin) {
-			await this.game.winPopup.playSummaryWin('ultra_win', response.total_win);
-		} else if (response.megawin) {
-			await this.game.winPopup.playSummaryWin('mega_win', response.total_win);
-		} else if (response.bigwin) {
-			await this.game.winPopup.playSummaryWin('big_win', response.total_win);
-		}
-	}
-
-	private switchToSuperGameHero(superGameType: 'zeus' | 'hades' | 'poseidon') {
-		switch (superGameType) {
-			case 'zeus':
-				this.game.hero.switchToZeus();
-				break;
-			case 'hades':
-				this.game.hero.switchToHades();
-				break;
-			case 'poseidon':
-				this.game.hero.switchToPoseidon();
-				break;
-		}
-	}
-
-	private goHome() {
-		this.isTerminated = true;
-
-		if (this.autoplayService.isActive()) {
-			this.autoplayService.stop();
-		}
-
-		this.disable();
-
-		this.game.platformMessaging.goHome();
-	}
+    this.game.platformMessaging.goHome();
+  }
 }

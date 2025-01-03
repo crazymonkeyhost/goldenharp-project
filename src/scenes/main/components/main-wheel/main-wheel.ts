@@ -10,7 +10,7 @@ export class MainWheel extends Container {
 
   private spinContainer = new Container();
 
-  private glowAnimation: Spine;
+  private readonly glowAnimation: Spine;
 
   private readonly sectors: MainWheelSector[] = [
     'wild-amphora',
@@ -36,8 +36,8 @@ export class MainWheel extends Container {
     this.spinContainer.addChild(this.wheelEmptySectors);
 
     this.glowAnimation = Spine.from({
-      atlas: 'additional_machine.atlas',
-      skeleton: 'additional_machine.json',
+      atlas: 'glow_circle.atlas',
+      skeleton: 'glow_circle.json',
     });
 
     this.spinContainer.addChild(this.glowAnimation);
@@ -113,7 +113,7 @@ export class MainWheel extends Container {
 
     const angleTo = this.spinContainer.angle < sectorAngleTo ? sectorAngleTo : sectorAngleTo + 360;
 
-    const duration = Math.abs(angleTo - this.spinContainer.angle) / 250;
+    const duration = Math.abs(angleTo - this.spinContainer.angle) / 200;
 
     return new Promise((resolve) => {
       const tl = gsap.timeline({

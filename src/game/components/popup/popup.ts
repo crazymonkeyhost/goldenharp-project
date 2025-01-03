@@ -8,7 +8,7 @@ import { getButtonStatesTextures } from '@/core/util/textures';
 type SettleType = 'dismiss' | 'action'
 
 export class Popup extends Container {
-  private sessionExpiredText = `Your session has expired\nPlease reload the page`;
+  private sessionExpiredText = `YOUR SESSION HAS EXPIRED\nPlease reload the page`;
 
   private textContent = new Container();
 
@@ -18,7 +18,7 @@ export class Popup extends Container {
 
   private closeButton: SpriteButton;
 
-  private underlay: Sprite;
+  private readonly underlay: Sprite;
 
   private root = new Container();
 
@@ -37,9 +37,9 @@ export class Popup extends Container {
 
     this.addChild(this.root);
 
-    const bg = Sprite.from('modal-bg');
+    const bg = Sprite.from('dialog-bg');
     bg.interactive = true;
-    bg.scale.set(1.5);
+    bg.scale.set(1);
     bg.anchor.set(0.5)
     this.root.addChild(bg);
 
@@ -56,8 +56,8 @@ export class Popup extends Container {
 
     this.mainButton = new SpriteButton({
       textures: getButtonStatesTextures('main-button'),
-      textStyle:gameStyles.depositButton,
-      text:'DEPOSIT NOW',
+      textStyle:gameStyles.popupMainButton,
+      text:'DEPOSIT',
       action: () => this.hide('action'),
     });
 
@@ -91,6 +91,8 @@ export class Popup extends Container {
 
     this.mainButton.view.visible = hasMainButton;
 
+    this.mainButton.textView.text = type === 'insuficientFunds' ? 'DEPOSIT' : 'RELOAD';
+
 
     return new Promise<SettleType>((resolve) => {
       this.underlay.interactive = canDismiss;
@@ -122,18 +124,18 @@ export class Popup extends Container {
     if (this.insufficientFundsContent) return;
 
     this.insufficientFundsContent = new Container();
-    this.insufficientFundsContent.y = 85;
+    // this.insufficientFundsContent.y = 85;
 
     const sack = Sprite.from('sack');
-    sack.anchor.set(0.5, 1);
-    sack.y = -40;
+    sack.anchor.set(0.5, 0.5);
+    sack.y = -185;
     this.insufficientFundsContent.addChild(sack);
 
     const text = new Text({
       text: 'NOT ENOUGH FUNDS',
-      style: gameStyles.popupTextNotEnough,
+      style: gameStyles.popupText,
     });
-    text.anchor.set(0.5, 1);
+    text.anchor.set(0.5, 0.5);
     this.insufficientFundsContent.addChild(text);
   }
 
@@ -141,18 +143,18 @@ export class Popup extends Container {
     if (this.regularContent) return;
 
     this.regularContent = new Container();
-    this.regularContent.y = 85;
 
-    const icon = Sprite.from('popup-icon');
-    icon.anchor.set(0.5, 1);
-    icon.y = -100;
+    const icon = Sprite.from('sandclock');
+    icon.anchor.set(0.5, 0.5);
+    icon.y = -195;
     this.regularContent.addChild(icon);
 
     this.mainText = new Text({
       text: '',
       style: gameStyles.popupText,
     });
-    this.mainText.anchor.set(0.5, 1);
+    this.mainText.anchor.set(0.5, 0.5);
+    this.mainText.position.set(0, 10);
     this.regularContent.addChild(this.mainText);
   }
 }

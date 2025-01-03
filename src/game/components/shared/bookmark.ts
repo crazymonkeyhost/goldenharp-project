@@ -6,7 +6,7 @@ export class Bookmark extends Container {
 
   private isActive = false;
 
-  private readonly bg: Sprite;
+  protected readonly bg: Sprite;
 
   private originalX: number | null = null;
 

@@ -1,10 +1,10 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container, Sprite, Text } from 'pixi.js';
 import { activateBonus, Bonus, BonusKind, boughtBonuses, buyBonus, onBonusBoughtListChanged } from '@/data/bonus-store';
 import { SpriteButton } from '@/core/ui/sprite-button';
 import { getButtonStatesTextures } from '@/core/util/textures';
 import { gameStyles } from '@/game-styles';
-import { currencyFormatter } from '@/core/services/currency-formatter';
 import { getTextureByBonusKind } from './get-buy-bonus-icon-texture';
+import { currencyFormatter } from '@/core/services/currency-formatter';
 
 export class BonusesList extends Container {
   constructor(list: Bonus[], asStore = false, onBonusBought?: (bonus: Bonus) => void) {
@@ -12,7 +12,7 @@ export class BonusesList extends Container {
 
     const items = list.map((bonus) => this.createBonusItem(bonus, asStore, onBonusBought));
     items.forEach((item, index) => {
-      item.position.set(index * 198 - 500, 0);
+      item.position.set(((index % 3) - 1) * 460 - 20, Math.floor(index / 3) * 300 + 150);
       this.addChild(item);
     });
   }
@@ -20,27 +20,24 @@ export class BonusesList extends Container {
   createBonusItem(bonus: Bonus, asStore = false, onBonusBought?: (bonus: Bonus) => void) {
     const root = new Container();
 
-    const scale = 0.9;
-
     const bg = Sprite.from('buy-bonus-bg');
     bg.anchor.set(0.5);
-    bg.scale.set(scale);
     root.addChild(bg);
 
     const iconTexture = getTextureByBonusKind(bonus.kind);
     let desctiptionTexture = '';
 
     switch (bonus.kind) {
-      case 'DJIN':
-        desctiptionTexture = 'bonus-desc-djin';
+      case 'FS':
+        desctiptionTexture = 'bonus-desc-fs';
         break;
 
-      case 'DJIN_JACKPOT':
-        desctiptionTexture = 'bonus-desc-djin-jackpot';
+      case 'BIG_WIN':
+        desctiptionTexture = 'bonus-desc-big-win';
         break;
 
-      case 'JACKPOT':
-        desctiptionTexture = 'bonus-desc-jackpot';
+      case 'WILDS':
+        desctiptionTexture = 'bonus-desc-wilds';
         break;
 
       case 'FS_10':
@@ -58,18 +55,27 @@ export class BonusesList extends Container {
 
     const icon = Sprite.from(iconTexture);
     icon.anchor.set(0.5);
-    icon.scale.set(scale);
+    icon.position.set(-110, -20);
     root.addChild(icon);
 
     const description = Sprite.from(desctiptionTexture);
-    description.anchor.set(0.5);
-    description.y = 150;
+    description.anchor.set(0, 1);
+    description.position.set(-60, 50);
     description.scale.set(1.1);
     root.addChild(description);
 
+    const price = new Text({
+      text: asStore ? currencyFormatter.format(bonus.price) : '0 pcs',
+      style: gameStyles.buyBonsPrice,
+      anchor: { x: 0, y: 0 },
+      position: { x: -25, y: 35 },
+    });
+
+    root.addChild(price);
+
     const button = new SpriteButton({
-      textures: getButtonStatesTextures('main-button'),
-      text: asStore ? currencyFormatter.format(bonus.price) : 'ACTIVATE',
+      textures: getButtonStatesTextures('bonus-card-btn'),
+      text: asStore ? 'BUY BONUS' : 'ACTIVATE',
       textStyle: gameStyles.buyBonusButton,
       action: () => {
         if (asStore) {
@@ -80,8 +86,7 @@ export class BonusesList extends Container {
         }
       },
     });
-    button.view.scale.set(0.65);
-    button.view.y = 240;
+    button.view.y = 112;
     root.addChild(button.view);
 
     if (!asStore) this.watch(button, bonus.kind);

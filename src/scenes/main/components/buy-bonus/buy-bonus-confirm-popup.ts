@@ -1,4 +1,4 @@
-import { Assets, Container, Sprite, type Texture } from 'pixi.js';
+import { Assets, Container, Sprite, Text, type Texture } from 'pixi.js';
 import { generateTexture } from '@/core/util/render';
 import { gameConfig } from '@/config/game-config';
 import { onResize } from '@/core/services/resize/resize.service';
@@ -31,25 +31,33 @@ export class BuyBonusConfirmPopup extends Container {
     this.root = new Container();
     this.addChild(this.root);
 
-    const bg = Sprite.from('buy-bonus-confirm');
+    const bg = Sprite.from('dialog-bg');
     bg.anchor.set(0.5);
     this.root.addChild(bg);
 
     this.sprite = new Sprite();
     this.sprite.anchor.set(0.5);
     this.sprite.scale.set(1.5);
-    this.sprite.position.set(0, -35);
+    this.sprite.position.set(0, -210);
     this.root.addChild(this.sprite);
 
     const button = new SpriteButton({
       textures: getButtonStatesTextures('main-button'),
-      text: 'ACTIVATE',
-      textStyle: gameStyles.buyBonusButton,
+      text: 'START',
+      textStyle: gameStyles.popupMainButton,
       action: this.onButtonClicked.bind(this),
     });
     button.view.scale.set(1);
-    button.view.y = 340;
+    button.view.y = 170;
     this.root.addChild(button.view);
+
+    const text = new Text({
+      text: 'YOU ACTIVATED A BONUS',
+      style: gameStyles.popupText,
+    });
+    text.anchor.set(0.5, 0.5);
+    text.position.set(0, 0);
+    this.root.addChild(text);
 
     this.visible = false;
 
@@ -79,6 +87,6 @@ export class BuyBonusConfirmPopup extends Container {
     this.underlay.height = resizeData.canvas.height;
 
     this.root.x = resizeData.actionArea.width / 2;
-    this.root.y = resizeData.actionArea.height / 2 - 100;
+    this.root.y = resizeData.actionArea.height / 2;
   }
 }

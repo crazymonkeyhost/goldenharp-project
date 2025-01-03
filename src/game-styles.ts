@@ -192,78 +192,80 @@ export const gameStyles = {
   },
 
   popupText: {
-    fill: COLORS.YELLOW,
-    fontSize: 40,
+    fill: "#FB6703",
+    fontSize: 48,
+    fontFamily: 'DIOGENES, Arial',
+    fontWeight: 'normal',
+    align: 'center',
+    stroke: {
+      color: COLORS.BLACK,
+      width: 7,
+    },
+    dropShadow: {
+      distance: 2,
+      blur: 2,
+      color: COLORS.BLACK,
+      alpha: 0.3,
+      angle: 0,
+    },
+  },
+
+  popupMainButton: {
+    fill: "#61111D",
+    fontSize: 58,
     fontFamily: 'Greconian, Arial',
     fontWeight: 'normal',
-    align: 'right',
-    stroke: {
-      color: '#331001',
-      width: 7,
-    },
+    align: 'center',
     dropShadow: {
-      distance: 2,
+      distance: 5,
       blur: 2,
-      color: '#331001',
+      color: '#c7c5bf',
       alpha: 0.3,
       angle: 0,
     },
-  },
-
-  popupTextNotEnough: {
-    fill: COLORS.YELLOW,
-    fontSize: 40,
-    fontFamily: 'Greconian,Arial',
-    fontWeight: 'normal',
-    align: 'right',
-    stroke: {
-      color: '#331001',
-      width: 7,
-    },
-    dropShadow: {
-      distance: 2,
-      blur: 2,
-      color: '#331001',
-      alpha: 0.3,
-      angle: 0,
-    },
-  },
-
-  depositButton: {
-    fill: COLORS.WHITE,
-    fontSize: 30,
-    fontFamily: 'Greconian,Arial',
-    fontWeight: 'normal',
-    align: 'right',
-    stroke: {
-      color: '#331001',
-      width: 7,
-    },
-    dropShadow: {
-      distance: 2,
-      blur: 2,
-      color: '#331001',
-      alpha: 0.3,
-      angle: 0,
-    },
-
-
   },
 
   buyBonusButton: {
-    fill: COLORS.WHITE,
-    fontSize: 36,
+    fill: "#d0f0e3",
+    fontSize: 25,
     fontFamily: 'Greconian,Arial',
     fontWeight: 'normal',
     align: 'center',
     stroke: {
-      color: '#331001',
-      width: 7,
+      color: '#16A829',
+      width: 3,
     },
     dropShadow: {
       distance: 2,
       blur: 2,
       color: '#331001',
+      alpha: 0.3,
+      angle: 0,
+    },
+  },
+
+  buyBonsPrice: {
+    fill: "#FF9900",
+    fontSize: 25,
+    fontFamily: 'GalindoRegular, Arial',
+    fontWeight: 'normal',
+    align: 'center',
+    stroke: {
+      color: '#000000',
+      width: 2,
+    },
+  },
+
+  buyBonusTabButton: {
+    fill: "#61111D",
+    fontSize: 40,
+    fontFamily: 'DIOGENES, Arial',
+    fontWeight: 'normal',
+    align: 'center',
+    dropShadow: {
+      distance: 5,
+      blur: 2,
+      color: '#c7c5bf',
       alpha: 0.3,
       angle: 0,
     },

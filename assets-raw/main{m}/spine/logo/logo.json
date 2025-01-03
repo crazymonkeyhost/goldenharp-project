@@ -1,53 +1,101 @@
 {
 "skeleton": {
-	"hash": "h9H/CUcKQTI",
+	"hash": "8n1KNTpIzRs",
 	"spine": "4.1-from-4.2.38",
-	"x": -273.5,
-	"y": -56,
-	"width": 547,
-	"height": 112,
+	"x": -356.29,
+	"y": -77.27,
+	"width": 710.66,
+	"height": 154.68,
 	"images": "D:/Файли для роботи/golden_harp/bonus/logo/",
 	"audio": "./audio"
 },
 "bones": [
 	{ "name": "root" },
-	{ "name": "logo", "parent": "root", "icon": "handLeft" }
+	{ "name": "bone", "parent": "root", "scaleX": 0.6612, "scaleY": 0.65 },
+	{ "name": "bone2", "parent": "bone" }
 ],
 "slots": [
-	{ "name": "logo_00000", "bone": "root", "attachment": "logo_" }
+	{ "name": "ddddd_00000", "bone": "root", "color": "ffffff00", "attachment": "logo/ddddd_00000", "blend": "additive" },
+	{ "name": "logo_00000", "bone": "root", "attachment": "logo_00000" }
 ],
 "skins": [
 	{
 		"name": "default",
 		"attachments": {
-			"logo_00000": {
-				"logo_": {
+			"ddddd_00000": {
+				"logo/ddddd_00000": {
 					"type": "mesh",
 					"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
 					"triangles": [ 1, 2, 3, 1, 3, 0 ],
-					"vertices": [ 1, 1, 273.5, -56, 1, 1, 1, -273.5, -56, 1, 1, 1, -273.5, 56, 1, 1, 1, 273.5, 56, 1 ],
+					"vertices": [ 1, 2, 535.92, -118.87, 1, 1, 2, -538.81, -118.87, 1, 1, 2, -538.81, 119.1, 1, 1, 2, 535.92, 119.1, 1 ],
 					"hull": 4,
-					"sequence": { "count": 37, "start": 0, "digits": 5 },
 					"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
-					"width": 547,
-					"height": 112
+					"width": 974,
+					"height": 212
+				}
+			},
+			"logo_00000": {
+				"logo_00000": {
+					"type": "mesh",
+					"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
+					"triangles": [ 1, 2, 3, 1, 3, 0 ],
+					"vertices": [ 1, 1, 408.5, -91, 1, 1, 1, -408.5, -91, 1, 1, 1, -408.5, 91, 1, 1, 1, 408.5, 91, 1 ],
+					"hull": 4,
+					"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
+					"width": 817,
+					"height": 182
 				}
 			}
 		}
 	}
 ],
 "animations": {
-	"logo": {
-		"attachments": {
-			"default": {
-				"logo_00000": {
-					"logo_": {
-						"sequence": [
-							{ "mode": "once", "delay": 0.05 },
-							{ "time": 1.8667, "mode": "once", "index": 36 }
-						]
-					}
-				}
+	"animation": {
+		"slots": {
+			"ddddd_00000": {
+				"rgba": [
+					{
+						"color": "ffffff00",
+						"curve": [ 0.221, 1, 0.445, 1, 0.221, 1, 0.445, 1, 0.221, 1, 0.445, 1, 0.221, 0, 0.445, 1 ]
+					},
+					{ "time": 0.6667, "color": "ffffffff", "curve": "stepped" },
+					{
+						"time": 1,
+						"color": "ffffffff",
+						"curve": [ 1.349, 1, 1.317, 1, 1.349, 1, 1.317, 1, 1.349, 1, 1.317, 1, 1.349, 1, 1.317, 0 ]
+					},
+					{ "time": 1.6667, "color": "ffffff00" }
+				]
+			}
+		},
+		"bones": {
+			"bone2": {
+				"scale": [
+					{
+						"x": 0.903,
+						"y": 0.903,
+						"curve": [ 0.277, 0.903, 0.557, 1, 0.277, 0.903, 0.557, 1 ]
+					},
+					{
+						"time": 0.8333,
+						"curve": [ 1.11, 1, 1.39, 0.903, 1.11, 1, 1.39, 0.903 ]
+					},
+					{ "time": 1.6667, "x": 0.903, "y": 0.903 }
+				]
+			},
+			"bone": {
+				"scale": [
+					{
+						"curve": [ 0.263, 1, 0.537, 1.075, 0.263, 1, 0.537, 1.075 ]
+					},
+					{
+						"time": 0.8,
+						"x": 1.075,
+						"y": 1.075,
+						"curve": [ 1.09, 1.075, 1.376, 1, 1.09, 1.075, 1.376, 1 ]
+					},
+					{ "time": 1.6667 }
+				]
 			}
 		}
 	}

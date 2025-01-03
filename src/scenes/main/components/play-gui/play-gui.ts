@@ -13,6 +13,7 @@ import {gameConfig} from '@/config/game-config';
 import {BonusItemIndicator} from '@/scenes/main/components/play-gui/bonus-item-indicator';
 import {Spine} from "@esotericsoftware/spine-pixi-v8";
 import {getRandElement, rand} from "@/core/util/math";
+import { ActiveBonusItemIndicator } from '@/scenes/main/components/play-gui/active-bonus-item-indicator';
 
 interface MainScreenGuiProps {
 	openAutoplayMenu: () => void;
@@ -22,13 +23,14 @@ interface MainScreenGuiProps {
 	infoClick: () => void;
 	buyBonusClick: () => void;
 	homeClick: () => void;
-	profileClick: () => void;
 }
 
 export class PlayGui extends Container {
 	private winCounter: Counter;
 
 	private readonly freeSpinsField: BonusItemIndicator;
+
+	private readonly activeBonusItem: BonusItemIndicator;
 
 	private readonly balanceField: PlayGuiField;
 
@@ -59,11 +61,12 @@ export class PlayGui extends Container {
 		this.addChild(this.freeSpinsField);
 		this.hideFreeSpinsField();
 
-		// buy bonus button
-		// const buyBonusButton = new SpriteButton({
-		// 	textures: getButtonStatesTextures('buy-bonus-button'),
-		// 	action: options.buyBonusClick,
-		// });
+		this.activeBonusItem = new ActiveBonusItemIndicator();
+		toActionArea(this.activeBonusItem, {x: 505, y: 400});
+		this.addChild(this.activeBonusItem);
+		// this.activeBonusItem.show();
+
+
 
 		const buyBonusButton = this.createBuyBonusButton(options.buyBonusClick);
 

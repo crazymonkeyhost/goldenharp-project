@@ -4,28 +4,28 @@ export function getTextureByBonusKind(kind: BonusKind) {
   let iconTexture = '';
 
   switch (kind) {
-    case 'DJIN':
-      iconTexture = 'bonus-icon-djin';
+    case 'FS':
+      iconTexture = 'bonus-icon-fs-chance';
       break;
 
-    case 'DJIN_JACKPOT':
-      iconTexture = 'bonus-icon-djin-jackpot';
+    case 'BIG_WIN':
+      iconTexture = 'bonus-icon-big-win';
       break;
 
-    case 'JACKPOT':
-      iconTexture = 'bonus-icon-jackpot';
+    case 'WILDS':
+      iconTexture = 'bonus-icon-wilds';
       break;
 
     case 'FS_10':
-      iconTexture = 'bonus-icon-fs-10';
+      iconTexture = 'bonus-icon-fs';
       break;
 
     case 'FS_20':
-      iconTexture = 'bonus-icon-fs-20';
+      iconTexture = 'bonus-icon-fs';
       break;
 
     case 'FS_50':
-      iconTexture = 'bonus-icon-fs-50';
+      iconTexture = 'bonus-icon-fs';
       break;
   }
 

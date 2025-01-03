@@ -188,9 +188,11 @@ export class LocalServerApi {
   private async getResults(betaData: BetData, isFreeGames: boolean): Promise<SpinResponse> {
     const spiral = Array.from({ length: this.spiralLength }).map(() => this.getRandomSymbol(isFreeGames));
 
-    const wheelWild = getRandElement(wildSymbols);
-
-    // const wheelWild = SYMBOLS.WILD_THUNDER;
+    // const wheelWild = getRandElement(wildSymbols);
+    //
+    const wheelWild = SYMBOLS.WILD_THUNDER; // crystals in line
+    // const wheelWild = SYMBOLS.WILD_TORCH; // crystals
+    // const wheelWild = SYMBOLS.WILD_AMPHORA; // comet
 
     const matrix = getSimulationMatrix(spiralPath.arrayToMatrix(spiral), this, isFreeGames, wheelWild);
 
@@ -312,10 +314,10 @@ export class LocalServerApi {
 
     // explode symbols by combinations
     allCombinations.forEach((combination) => {
-      combination.items.forEach(({ location: [x, y], symbol }) => {
-        explodedMatrix[y][x] = `${symbol}*`;
+      combination.items.forEach(({ location: [x, y], symbol, replacedTo }) => {
+        explodedMatrix[y][x] = replacedTo ? replacedTo : `${symbol}*`;
 
-        spiral[spiralPath.getIndexByPosition(x, y)] = null;
+        spiral[spiralPath.getIndexByPosition(x, y)] = replacedTo ? replacedTo : null;
       });
     });
 
@@ -481,7 +483,7 @@ export class LocalServerApi {
       wildFeatured: false,
       items: positions.map(([x, y]) => {
         return {
-          replacedTo: null,
+          replacedTo: y === 2 ? getRandElement([SYMBOLS.ZEUS, SYMBOLS.CRONUS]) : null,
           location: [x, y],
           symbol: matrix[y][x],
         };

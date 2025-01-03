@@ -1,50 +1,57 @@
-import {Container, Text} from 'pixi.js';
-import {Spine} from '@esotericsoftware/spine-pixi-v8';
-import {gameStyles} from "@/game-styles";
+import { Container, Text } from 'pixi.js';
+import { Spine } from '@esotericsoftware/spine-pixi-v8';
+import { gameStyles } from '@/game-styles';
 
 export class BonusItemIndicator extends Container {
-	private readonly animation: Spine;
+  private readonly animation: Spine;
 
-	private readonly field: Text
+  private readonly fieldContainer: Container;
 
-	private timer: NodeJS.Timeout;
+  protected readonly field: Text;
 
-	constructor(private readonly type: 'bonus' | 'freespin') {
-		super();
+  private timer: NodeJS.Timeout;
 
-		this.animation = Spine.from({
-			skeleton: 'bonus.json',
-			atlas: 'bonus.atlas',
-		});
-		this.addChild(this.animation);
+  constructor(private readonly type: 'bonus' | 'freespin') {
+    super();
 
+    this.animation = Spine.from({
+      skeleton: 'bonus.json',
+      atlas: 'bonus.atlas',
+    });
+    this.addChild(this.animation);
 
-		this.field = new Text({
-			text: '10',
-			style: gameStyles.mainSceneFieldValue,
-			anchor: {x: 0.5, y: 0.5},
-		});
-		this.field.position.set(22.5, -25.5);
+    this.fieldContainer = new Container();
 
-		this.addChild(this.field);
-	}
+    this.field = new Text({
+      text: '10',
+      style: gameStyles.mainSceneFieldValue,
+      anchor: { x: 0.5, y: 0.5 },
+    });
 
-	setValue(value: number) {
-		this.field.text = value.toString();
-	}
+    this.animation.addSlotObject(type === 'freespin'? 'result' : 'result2', this.fieldContainer);
 
-	public show() {
-		this.visible = true;
+    this.fieldContainer.addChild(this.field);
+  }
 
-		this.timer = setInterval(() => {
-			this.animation.state.setAnimation(0, 'bonus1', false);
-		}, 1000);
-	}
+  setValue(value: number) {
+    this.field.text = value.toString();
+  }
 
-	public hide() {
-		this.visible = false;
+  public show() {
+    this.visible = true;
 
-		clearInterval(this.timer);
-	}
+    const playAnimation = () =>
+      this.animation.state.setAnimation(0, this.type === 'freespin' ? 'bonus1' : 'bonus2', false);
 
+    playAnimation();
+    this.timer = setInterval(() => {
+      playAnimation();
+    }, 2000);
+  }
+
+  public hide() {
+    this.visible = false;
+
+    clearInterval(this.timer);
+  }
 }

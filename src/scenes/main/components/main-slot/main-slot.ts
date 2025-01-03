@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
-import { JobResult } from '@/core/util/time';
+import { JobResult, wait } from '@/core/util/time';
 import { MainCell, WinType } from '@/scenes/main/components/main-slot/main-cell';
 import { SettingsService } from '@/game/services/settings-service';
 import { slotConfig } from '@/config/slot-config';
@@ -9,7 +9,6 @@ import { TCombinationItem, TReplacementItem } from '@/api/response-types';
 import { raise } from '@/core/util/functions';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { SlotEffectsManager } from '@/scenes/main/components/main-slot/slot-effects-manager';
 
 export class MainSlot extends Container {
   protected cells: MainCell[] = [];
@@ -19,10 +18,6 @@ export class MainSlot extends Container {
   settingService: SettingsService;
 
   public readonly underlay: Sprite;
-
-  private effectsContainer = new Container();
-
-  public readonly effectsManager: SlotEffectsManager;
 
   public getSlotWidth() {
     return (this.config.size.width + this.config.gap.x) * this.columns;
@@ -64,8 +59,6 @@ export class MainSlot extends Container {
     super();
 
     this.isRenderGroup = false;
-
-    this.effectsManager = new SlotEffectsManager(this, this.effectsContainer);
 
     this.loadSymbols();
 
@@ -110,11 +103,8 @@ export class MainSlot extends Container {
     return new MainCell(this.config.size, index);
   }
 
-
-
-
   public async playShift(explodedPositions: TCombinationItem['location'][], cells: string[][]) {
-    const speed = 1200; // 1100
+    const speed = 1000; // 1100
     const flatCells = spiralPath.matrixToArray(cells);
 
     const explodedCells = [...new Set(explodedPositions.map(([x, y]) => this.getCell(x, y)))];
@@ -204,8 +194,6 @@ export class MainSlot extends Container {
     this.cells.forEach((cell, i) => cell.setId(flat[i] || ''));
   }
 
-
-
   protected loadSymbols() {
     this.symbols = slotConfig.symbols;
   }
@@ -234,8 +222,6 @@ export class MainSlot extends Container {
     this._winCellsTopContainer = container;
     this._winCellsTopContainer.x += this.x;
     this._winCellsTopContainer.y += this.y;
-
-    this._winCellsTopContainer.addChild(this.effectsContainer);
   }
 
   private _winCellsTopContainer: Container;
@@ -244,7 +230,6 @@ export class MainSlot extends Container {
   public playCellsWin(cellsPositions: TCombinationItem['location'][], type: WinType = 'normal'): JobResult {
     const allCells = this.moveCellsToTop(cellsPositions);
 
-    console.log('playCellsWin', cellsPositions);
     // this.underlay.visible = true;
 
     let doneResolve: () => void;
@@ -257,7 +242,7 @@ export class MainSlot extends Container {
 
     done.then(() => {
       allCells.forEach((cell) => cell.bringBackToOriginalParent());
-      // allCells.forEach((cell) => cell.stopWin());
+      allCells.forEach((cell) => cell.stopWin());
       // this.underlay.visible = false;
     });
 
@@ -278,6 +263,8 @@ export class MainSlot extends Container {
 
     Promise.all(allCells.map((cell) => cell.explode())).then(() => doneResolve());
 
+    allCells.forEach(cell=>cell.setId(null))
+
     done.then(() => {
       allCells.forEach((cell) => cell.bringBackToOriginalParent());
 
@@ -293,6 +280,53 @@ export class MainSlot extends Container {
     return { done, cancel };
   }
 
+  public async crystalExplode(combinations: TCombinationItem[]) {
+    const allCells = this.moveCellsToTop(
+      combinations.sort((c1, c2) => {
+        return c1.location[1] - c2.location[1];
+      }).map((item) => item.location),
+    );
+
+    await Promise.all(
+      allCells.map((cell, i) => {
+        return wait(100 * i).done.then(() => {
+          return cell.playCrystalAppear();
+        });
+      }),
+    );
+
+    allCells.forEach((cell, i) => cell.setId(combinations[i].replacedTo));
+
+    await Promise.all(
+      allCells.map((cell) => {
+        return cell.playCrystalExplode();
+      }),
+    );
+
+    allCells.forEach((cell) => cell.bringBackToOriginalParent());
+  }
+
+  public async playLightning(cellsPositions: TCombinationItem['location'][]) {
+    const allCells = this.moveCellsToTop(cellsPositions);
+
+    await Promise.all(
+      allCells.map((cell) => {
+        return cell.playLightning();
+      }),
+    );
+
+    allCells.forEach((cell) => cell.bringBackToOriginalParent());
+  }
+
+  public async playComet(replaced: TReplacementItem[]) {
+    const allCells = this.moveCellsToTop(replaced.map((item) => item.location));
+
+    await Promise.all(
+      allCells.map((cell, i) => {
+        return cell.playCometExplosion(replaced[i].symbol);
+      }),
+    );
+  }
 
   private moveCellsToTop(cellsPositions: number[][]): MainCell[] {
     const allCells = new Set<MainCell>();

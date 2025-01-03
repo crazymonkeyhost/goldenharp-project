@@ -29,7 +29,7 @@ export class Logo extends Container {
 	}
 
 	private playAllTime() {
-		this.animation.state.setAnimation(0, 'logo', false);
+		this.animation.state.setAnimation(0, 'animation', false);
 
 		setTimeout(this.playAllTime.bind(this), rand(40000, 50000));
 	}

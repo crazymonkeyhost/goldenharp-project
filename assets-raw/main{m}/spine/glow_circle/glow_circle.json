@@ -1,0 +1,132 @@
+{
+"skeleton": {
+	"hash": "mWV1GARqXbI",
+	"spine": "4.1-from-4.2.38",
+	"x": -100.5,
+	"y": -94.5,
+	"width": 201,
+	"height": 189,
+	"images": "D:/Файли для роботи/golden_harp/additional_machine/",
+	"audio": "D:/Файли для роботи/golden_harp"
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "bone", "parent": "root" },
+	{ "name": "glow_circle", "parent": "bone", "icon": "handLeft" },
+	{ "name": "bone32", "parent": "glow_circle", "icon": "gear" },
+	{ "name": "bone30", "parent": "bone32", "icon": "gear" },
+	{ "name": "bone31", "parent": "bone32", "icon": "asterisk" }
+],
+"slots": [
+	{ "name": "fire 1", "bone": "root", "color": "ffffff00", "attachment": "fire 1" },
+	{ "name": "Шар 3144", "bone": "root", "color": "ffffff00", "attachment": "Шар 3144" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"fire 1": {
+				"fire 1": {
+					"type": "mesh",
+					"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
+					"triangles": [ 1, 2, 3, 1, 3, 0 ],
+					"vertices": [ 1, 5, 73.48, -71.03, 1, 1, 5, -73.52, -70.97, 1, 1, 5, -73.48, 71.03, 1, 1, 5, 73.52, 70.97, 1 ],
+					"hull": 4,
+					"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
+					"width": 147,
+					"height": 142
+				}
+			},
+			"Шар 3144": {
+				"Шар 3144": {
+					"type": "mesh",
+					"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
+					"triangles": [ 1, 2, 3, 1, 3, 0 ],
+					"vertices": [ 1, 4, 100.5, -94.5, 1, 1, 4, -100.5, -94.5, 1, 1, 4, -100.5, 94.5, 1, 1, 4, 100.5, 94.5, 1 ],
+					"hull": 4,
+					"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
+					"width": 201,
+					"height": 189
+				}
+			}
+		}
+	}
+],
+"animations": {
+	"glow_circle": {
+		"slots": {
+			"fire 1": {
+				"rgba": [
+					{ "color": "ffffff00" },
+					{ "time": 0.1333, "color": "ffffffff", "curve": "stepped" },
+					{ "time": 0.3, "color": "ffffffff", "curve": "stepped" },
+					{
+						"time": 0.8667,
+						"color": "ffffffff",
+						"curve": [ 1.167, 1, 1.467, 1, 1.167, 1, 1.467, 1, 1.167, 1, 1.467, 1, 1.167, 1, 1.467, 0 ]
+					},
+					{
+						"time": 1.7667,
+						"color": "ffffff00",
+						"curve": [ 2.022, 1, 2.278, 1, 2.022, 1, 2.278, 1, 2.022, 1, 2.278, 1, 2.022, 0, 2.278, 1 ]
+					},
+					{
+						"time": 2.5333,
+						"color": "ffffffff",
+						"curve": [ 2.778, 1, 3.022, 1, 2.778, 1, 3.022, 1, 2.778, 1, 3.022, 1, 2.778, 1, 3.022, 0 ]
+					},
+					{ "time": 3.2667, "color": "ffffff00" }
+				]
+			},
+			"Шар 3144": {
+				"rgba": [
+					{
+						"color": "ffffff00",
+						"curve": [ 0.1, 1, 0.2, 1, 0.1, 1, 0.2, 1, 0.1, 1, 0.2, 1, 0.1, 0, 0.2, 1 ]
+					},
+					{ "time": 0.3, "color": "ffffffff", "curve": "stepped" },
+					{
+						"time": 0.8667,
+						"color": "ffffffff",
+						"curve": [ 1.167, 1, 1.467, 1, 1.167, 1, 1.467, 1, 1.167, 1, 1.467, 1, 1.167, 1, 1.467, 0 ]
+					},
+					{
+						"time": 1.7667,
+						"color": "ffffff00",
+						"curve": [ 2.022, 1, 2.278, 1, 2.022, 1, 2.278, 1, 2.022, 1, 2.278, 1, 2.022, 0, 2.278, 1 ]
+					},
+					{
+						"time": 2.5333,
+						"color": "ffffffff",
+						"curve": [ 2.778, 1, 3.022, 1, 2.778, 1, 3.022, 1, 2.778, 1, 3.022, 1, 2.778, 1, 3.022, 0 ]
+					},
+					{ "time": 3.2667, "color": "ffffff00" }
+				]
+			}
+		},
+		"bones": {
+			"bone32": {
+				"translate": [
+					{ "time": 2.5333 }
+				],
+				"scale": [
+					{
+						"x": 0,
+						"y": 0,
+						"curve": [ 0.392, 0, 0.808, 1, 0.392, 0, 0.808, 1 ]
+					},
+					{ "time": 1.2 }
+				]
+			},
+			"bone30": {
+				"scale": [
+					{
+						"curve": [ 0.394, 1, 0.806, 1.344, 0.394, 1, 0.806, 1.344 ]
+					},
+					{ "time": 1.2, "x": 1.344, "y": 1.344 }
+				]
+			}
+		}
+	}
+}
+}

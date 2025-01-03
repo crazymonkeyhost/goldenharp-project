@@ -6,15 +6,15 @@ export type Bonus = {
   price: number;
 }
 
-export type BonusKind = 'DJIN' | 'DJIN_JACKPOT' | 'JACKPOT' | 'FS_10' | 'FS_20' | 'FS_50';
+export type BonusKind = 'FS' | 'BIG_WIN' | 'WILDS' | 'FS_10' | 'FS_20' | 'FS_50';
 
 export const bonusStore: Bonus[] = [
-  { kind: 'DJIN', price: 10 },
-  { kind: 'DJIN_JACKPOT', price: 20 },
-  { kind: 'JACKPOT', price: 30 },
   { kind: 'FS_10', price: 40 },
   { kind: 'FS_20', price: 50 },
   { kind: 'FS_50', price: 60 },
+  { kind: 'WILDS', price: 30 },
+  { kind: 'BIG_WIN', price: 20 },
+  { kind: 'FS', price: 10 },
 ]
 
 export const boughtBonuses: Bonus[] = [];

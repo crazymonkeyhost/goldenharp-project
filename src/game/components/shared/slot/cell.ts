@@ -1,7 +1,7 @@
 import { Sprite, Assets, BlurFilter, Container, Graphics } from 'pixi.js';
 
 export class Cell extends Container {
-  public id: string;
+  public id: string|null = null;
 
   protected frameSize: WidthHeight;
 
@@ -54,22 +54,6 @@ export class Cell extends Container {
     this.staticSprite.texture = this.getTextureById();
   }
 
-  blur() {
-    if (this.blured) return;
-
-    this.blured = true;
-
-    this.makeBlur();
-  }
-
-
-  unblur() {
-    if (!this.blured) return;
-
-    this.blured = false;
-
-    this.makeUnblur();
-  }
 
   protected makeBlur() {
     this.staticSprite.filters = [
@@ -83,8 +67,8 @@ export class Cell extends Container {
     this.staticSprite.filters = [];
   }
 
-  getTextureById(id: string = this.id) {
-    return Assets.get(id);
+  getTextureById(id: string|null = this.id) {
+    return Assets.get(id!);
   }
 
   async playWin(..._args: unknown[]) {

@@ -25,11 +25,7 @@ export function getSimulationMatrix(
   isFreeGames: boolean,
   wild:string
 ): string[][] {
-  if (simulation.zeus) {
-    simulation.zeus = false;
 
-    return placeCombination(currentMatrix, [SYMBOLS.ZEUS, SYMBOLS.ZEUS, SYMBOLS.ZEUS]);
-  }
 
   if (simulation.wild) {
     const symbol = getRandElement([...lowSymbols, ...seniorSymbols]);
@@ -41,6 +37,13 @@ export function getSimulationMatrix(
     simulation.cronus = false;
 
     return scatterSymbolsOnReels(currentMatrix, SYMBOLS.CRONUS, [3, 4]);
+  }
+
+
+  if (simulation.zeus) {
+    simulation.zeus = false;
+
+    return placeCombination(currentMatrix, [SYMBOLS.ZEUS, SYMBOLS.ZEUS, SYMBOLS.ZEUS]);
   }
 
   return currentMatrix;
