@@ -188,9 +188,9 @@ export class LocalServerApi {
   private async getResults(betaData: BetData, isFreeGames: boolean): Promise<SpinResponse> {
     const spiral = Array.from({ length: this.spiralLength }).map(() => this.getRandomSymbol(isFreeGames));
 
-    // const wheelWild = getRandElement(wildSymbols);
+    const wheelWild = getRandElement(wildSymbols);
     //
-    const wheelWild = SYMBOLS.WILD_THUNDER; // crystals in line
+    // const wheelWild = SYMBOLS.WILD_THUNDER; // crystals in line
     // const wheelWild = SYMBOLS.WILD_TORCH; // crystals
     // const wheelWild = SYMBOLS.WILD_AMPHORA; // comet
 
