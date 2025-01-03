@@ -263,12 +263,11 @@ export class MainSlot extends Container {
 
     Promise.all(allCells.map((cell) => cell.explode())).then(() => doneResolve());
 
-    allCells.forEach(cell=>cell.setId(null))
-
     done.then(() => {
       allCells.forEach((cell) => cell.bringBackToOriginalParent());
 
-      console.log('explode done');
+      allCells.forEach(cell=>cell.setId(null))
+
       // allCells.forEach(cell => cell.());
       // allCells.forEach((cell => cell.stopWin());
     });

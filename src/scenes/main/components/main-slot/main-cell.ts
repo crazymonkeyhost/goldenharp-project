@@ -82,8 +82,6 @@ export class MainCell extends Cell {
     //   atlas: 'TPT_spine.atlas',
     // });
 
-    console.count('Spine created');
-
     this.animationsContainer.addChild(this.spineAnimation);
 
     this.spineAnimation.visible = false;
