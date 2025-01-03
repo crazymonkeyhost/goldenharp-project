@@ -25,8 +25,8 @@ export class SettingsPage implements TapPageItem{
   protected createContent() {
     const content = new Container();
     // sliders
-    const slidersY = 180;
-    const slidersYPadding = 240;
+    const slidersY = 80;
+    const slidersYPadding = 200;
 
     // music
     const musicSlier = this.createSettingsSlider(
@@ -48,21 +48,21 @@ export class SettingsPage implements TapPageItem{
     soundSlier.root.y = slidersY + slidersYPadding * 1;
     content.addChild(soundSlier.root);
 
-    // // animations speed
-    // const speedSlider = this.createSettingsSlider(
-    //   'ANIMATIONS SPEED:',
-    //   settingsService.getSpeed(),
-    //   (value) => settingsService.setSpeed(value, speedSlider),
-    // );
-    // speedSlider.root.x = 0;
-    // speedSlider.root.y = slidersY + slidersYPadding * 2;
-    // content.addChild(speedSlider.root);
-    //
-    // settingsService.onChanges.add((payload) => {
-    //   if (payload.speed !== undefined && payload.target !== speedSlider) {
-    //     speedSlider.setValue(payload.speed);
-    //   }
-    // });
+    // animations speed
+    const speedSlider = this.createSettingsSlider(
+      'ANIMATIONS SPEED:',
+      settingsService.getSpeed(),
+      (value) => settingsService.setSpeed(value, speedSlider),
+    );
+    speedSlider.root.x = 0;
+    speedSlider.root.y = slidersY + slidersYPadding * 2;
+    content.addChild(speedSlider.root);
+
+    settingsService.onChanges.add((payload) => {
+      if (payload.speed !== undefined && payload.target !== speedSlider) {
+        speedSlider.setValue(payload.speed);
+      }
+    });
 
     // // Checkboxes
     // const checkboxesY = 550;
